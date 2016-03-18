@@ -20,8 +20,8 @@ Lesson 1
 -----
 Lesson 2
 
- - Implementation Of The KTs Matrices Calculation
- - Implementation Of The General KT Matrix (As a sparse matrix)
+ - Implementation Of The KTs Matrices Computation
+ - Implementation Of The General K Matrix Computation (Memorized as a sparse matrix)
 
 -----
 
