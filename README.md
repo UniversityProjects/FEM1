@@ -20,8 +20,17 @@ Lesson 1
 -----
 Lesson 2
 
- - Implementation Of The KTs Matrices Computation
- - Implementation Of The General K Matrix Computation (Memorized as a sparse matrix)
+-div(grad u) = f 	on omega
+u = g 	on omega's border
+
+ - KhTs Matrices Computation
+ - General Kh Matrix Computation (Memorized as a sparse matrix)
+ - fhT Elements With Trapezoid And Barycenter Methods
+ - Fh Array Computation
+ - Border Condition Implementation
+ - Solution Computation
+ - Solution Plot
+ - Example with f = 1 and g = 0
 
 -----
 
