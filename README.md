@@ -21,7 +21,9 @@ Lesson 1
 Lesson 2
 
 -div(grad u) = f 	on omega
-u = g 	on omega's border
+u = g 			    on omega's border
+
+First Order Elements
 
  - KhTs Matrices Computation
  - General Kh Matrix Computation (Memorized as a sparse matrix)
@@ -33,5 +35,19 @@ u = g 	on omega's border
  - Example with f = 1 and g = 0
 
 -----
+Lesson 3
+
+-div(c grad u) = f 	on omega
+u = g 	on omega's border
+
+First Order Elements
+
+ - Added General Diffusion Term c(x,y)
+ - c = 1
+ - c = 2 + x + sin(3y)
+ - Added Neumann Conditions
+ - Discontinuous c(x,y) Example (With Mesh That Follows The Discontinuity)
+ - Added Exact Solution Confront
+ - Added An Order 2 Formula For Numerical Integration
 
 
