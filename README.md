@@ -49,5 +49,10 @@ First Order Elements
  - Discontinuous c(x,y) Example (With Mesh That Follows The Discontinuity)
  - Added Exact Solution Confront
  - Added An Order 2 Formula For Numerical Integration
+ 
+ 
+-div(c grad u) + alpha*u = f 	on omega
+u = g 	on omega's border
 
+ - Added general reaction term alpha
 
