@@ -1,3 +1,3 @@
-% genera la mesh contenuta in omega.poly
+% Generates the mesh from the .poly file
 
-system(['triangle -pqanI ' omega '.poly']);
+system(['triangle -pqaI ' omega '.poly']);

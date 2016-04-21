@@ -28,9 +28,9 @@ readmesh;
 % Quadrature Formula
 fdq = 'degree=5';
 
-% (xhq, yhq) nodi di quadratura
+% (xhq, yhq) Quadrature's Nodes
 % whq = pesi
-[xhq,yhq,whq] = quadratura(fdq);
+[xhq,yhq,whq] = quadrature(fdq);
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

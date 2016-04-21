@@ -1,5 +1,5 @@
-% disegno la mesh
+% Plot Mesh
 
-patch('Vertices',[xv yv],'Faces',vertices,'FaceColor','w')
-
-title(omega)
+figure();
+patch('Vertices',[xv yv], 'Faces', vertices, 'FaceColor','w');
+title = ['Mesh - ' omega];

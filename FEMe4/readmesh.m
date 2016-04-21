@@ -20,65 +20,127 @@
 %         \ /                     v2
 %         v2
 
-% legge la mesh contenuta in omega
+% Read the mesh contained in omega
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Vertices Acquisition
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+% Open File Identificator In Reading Mode
 fid = fopen([omega '.node']);
 
-% leggo la prima riga
+% Read First Row As An Integer Array
+tmp = fscanf(fid,'%d',4);
 
-tmp = fscanf(fid,'%d',4); % tmp = vettore
+% First Record Contains 
+% Vertices Number - Dimension - 0 - Flag
+% nnod -> Vertices Number
 nver = tmp(1);
 
-xv = zeros(nver,1); % vettore colonna di nver zeri
+% Vertices Coordinates Arrays Definition
+xv = zeros(nver,1); 
 yv = zeros(nver,1);
+
+% Border Flag Array Definition
 vertexmarker = zeros(nver,1);
 
-% leggiamo le coord e i flag dei nodi
-
+% Read The Whole File To Acquisite The Mesh
 for iv=1:nver
-    %
-    tmp = fscanf(fid,'%f',4);
-    %
-    xv(iv) = tmp(2);         % coord x
-    yv(iv) = tmp(3);         % coord y
-    %
-    vertexmarker(iv) = tmp(4); % flag
-    %
+   
+    % Read iv Row
+    % point_number (iv) - x coordinate - y coordinate - border flag
+    tmp = fscanf(fid,'%f', 4);
+    
+    % Filling The Arrays
+    xv(iv) = tmp(2);
+    yv(iv) = tmp(3);    
+    vertexmarker(iv) = tmp(4);   
+    
 end
 
-fclose(fid); % chiudo il file dei nodi
-
-fid = fopen([omega '.ele']);
-tmp = fscanf(fid,'%d',3);
-
-nele = tmp(1);
-vertices = zeros(nele,3);
-
-for iele=1:nele
-  tmp = fscanf(fid,'%d',4);
-  vertices(iele,1) = tmp(2);
-  vertices(iele,2) = tmp(3);
-  vertices(iele,3) = tmp(4);
-end
-
+% Close File Identificator
 fclose(fid);
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Elements Acquisition
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+% Open File Identificator In Reading Mode
+fid = fopen([omega '.ele']);
+
+% Read First Row As An Integer Array
+tmp = fscanf(fid,'%d', 3);
+
+% First Record Contains 
+% Element Numbers - Dimension - 0 - Flag
+% nel -> Element Number
+nele = tmp(1);
+
+% Elements Matrix Deinition
+vertices = zeros(nele, 3);
+
+% Read The Whole File To Acquisite The Elements
+for iele=1:nele
+   
+    % Read iele Row
+    % element_number (iv) - first vertex - second vertex - third vertex
+    tmp = fscanf(fid,'%d', 4);
+    
+    % Filling The Arrays
+    vertices(iele,1) = tmp(2); % First Vertex
+    vertices(iele,2) = tmp(3); % Second Vertex
+    vertices(iele,3) = tmp(4); % Third Vertex
+    
+end
+
+% Close File Identificator
+fclose(fid);
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Neigh Acquisition
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Open File Identificator In Reading Mode
 fid = fopen([omega '.neigh']);
+
+% Read First Row As An Integer Array
 tmp = fscanf(fid,'%d',2);
 
+% First Record Contains 
+% Element Numbers - Neigh
+% nele -> Element Number
 nele = tmp(1);
+
+% Neigh Tridimensional Matrix Definition
 neigh = zeros(nele,3);
 
+% Read The Whole File To Acquisite The Neighs
 for iele=1:nele
+    
+  % Read iele Row
+  % element_number (iv) - first neigh - second neigh - third neigh
   tmp = fscanf(fid,'%d',4);
-  neigh(iele,1) = tmp(2);
-  neigh(iele,2) = tmp(3);
-  neigh(iele,3) = tmp(4);
+  
+  % Filling The Arrays
+  neigh(iele,1) = tmp(2); % First Neigh
+  neigh(iele,2) = tmp(3); % Second Neight
+  neigh(iele,3) = tmp(4); % Third Neigh
 end
 
+
+% Close File Identificator
 fclose(fid);
 
-% crea struttura edge
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Edge Data Structure Creation: Author Alessandro Russo
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 S = sparse(nele,nele);
 T = sparse(nele,3);
