@@ -1,11 +1,13 @@
 # FEMElliptic
-Finite Element Methods For Elliptic Problems
+Finite Element Methods For Elliptic Problems 
 
-Uses the software triangle
+Uses the Matlab languages for the finite element implementation.
+
+Uses the C library triangle
 
 https://www.cs.cmu.edu/~quake/triangle.html
 
-for the mesh generation.
+for 2D mesh generation.
 
 -----
 Lesson 1
@@ -67,6 +69,7 @@ Second Order Elements
 PART I
 
  - Added mesh details for finite elements of order K = 2.
+   (See http://arxiv.org/abs/math/0501496v2 for quadrature formula)
  - Added KE partial coefficients matrix computation.
 
  
