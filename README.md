@@ -61,6 +61,7 @@ u = g 	on omega's border
 Lesson 4
 
 -div(c grad u) = f 	on omega
+
 Second Order Elements
 
 PART I
