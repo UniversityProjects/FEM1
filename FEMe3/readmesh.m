@@ -64,7 +64,7 @@ vertices = zeros(nel, 3);
 % Read The Whole File To Acquisite The Elements
 for iel=1:nel
    
-    % Read iv Row
+    % Read iel Row
     % element_number (iv) - first vertex - second vertex - third vertex
     tmp = fscanf(fid,'%d', 4);
     
