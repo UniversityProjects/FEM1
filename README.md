@@ -23,7 +23,9 @@ Lesson 1
 Lesson 2
 
 -div(grad u) = f 	on omega
+
 u = g 			    on omega's border
+
 
 First Order Elements
 
@@ -40,7 +42,9 @@ First Order Elements
 Lesson 3
 
 -div(c grad u) = f 	on omega
+
 u = g 	on omega's border
+
 
 First Order Elements
 
@@ -54,7 +58,9 @@ First Order Elements
  
  
 -div(c grad u) + alpha*u = f 	on omega
+
 u = g 	on omega's border
+
 
  - Added general reaction term alpha.
 
@@ -63,6 +69,7 @@ u = g 	on omega's border
 Lesson 4
 
 -div(c grad u) = f 	on omega
+
 
 Second Order Elements
 
