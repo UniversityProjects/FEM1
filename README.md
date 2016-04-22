@@ -79,6 +79,16 @@ PART I
    (See http://arxiv.org/abs/math/0501496v2 for quadrature formula)
  - Added KE partial coefficients matrix computation.
 
+PART II
+
+ - Added Full Kh matrix Computation
+ - Added FE partial coeficients array computation.
+ - Added full Fh coeficients array computation.
+ - Added NonHomogeneous Dirichlet conditions.
+ - Added uh approximated solution computation and plot.
+ 
+
+
  
 
 
