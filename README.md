@@ -85,10 +85,31 @@ PART II
  - Added FE partial coeficients array computation.
  - Added full Fh coeficients array computation.
  - Added NonHomogeneous Dirichlet conditions.
- - Added uh approximated solution computation and plot.
+ - Added uh approximated solution computation.
+ - Uh plot using only vertices info.
+ 
+ 
+ -----
+Lesson 5
+
+-div(c grad u) = f 	on omega
+
+
+Second Order Elements
+
+ - Plot using edge info.
+ - Added uniform mesh generator.
+ - Added exact solution plot.
+ - L2 error.
+ - Added makeue.
  
 
 
  
+
+
+
+
+
 
 
