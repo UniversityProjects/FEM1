@@ -8,4 +8,5 @@ end
 
 figure();
 patch('Vertices',[xv yv zv], 'Faces', vertices, 'FaceColor','w');
+title ('Exact Solution On Vertices');
 view(3);

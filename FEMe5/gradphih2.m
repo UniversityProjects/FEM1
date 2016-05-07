@@ -1,4 +1,4 @@
-function [gx, gy] = gradhphih2(i,x,y)
+function [gx, gy] = gradphih2(i,x,y)
 
 % Basis Functions Gradients On The Riferement Element For k = 2
 

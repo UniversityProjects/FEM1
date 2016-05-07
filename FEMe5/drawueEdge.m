@@ -37,4 +37,5 @@ for iedge=1:nedge
     
 end
 
+title ('Exact Solution On Edges');
 view(3);
