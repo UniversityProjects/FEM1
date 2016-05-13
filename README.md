@@ -10,7 +10,7 @@ https://www.cs.cmu.edu/~quake/triangle.html
 for 2D mesh generation.
 
 -----
-Lesson 1
+Lab Session 1
 
  - Starting with the triangle library in Matlab.
  - Mesh Creation.
@@ -20,7 +20,7 @@ Lesson 1
  - Vertex Count In Plot.
 
 -----
-Lesson 2
+Lab Session 2
 
 -div(grad u) = f 	on omega
 
@@ -39,7 +39,7 @@ First Order Elements
  - Example with f = 1 and g = 0.
 
 -----
-Lesson 3
+Lab Session 3
 
 -div(c grad u) = f 	on omega
 
@@ -66,7 +66,7 @@ u = g 	on omega's border
 
 
 -----
-Lesson 4
+Lab Session 4
 
 -div(c grad u) = f 	on omega
 
@@ -90,7 +90,7 @@ PART II
  
  
  -----
-Lesson 5
+Lab Sessi on 5
 
 -div(c grad u) = f 	on omega
 
@@ -102,6 +102,7 @@ Second Order Elements
  - Added exact solution plot.
  - L2 error.
  - Added makeue.
+ - Added quadrature formula for degree=3.
  
 
 
