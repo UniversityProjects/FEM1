@@ -2,5 +2,5 @@
 
 figure();
 patch('Vertices',[xv yv], 'Faces', vertices, 'FaceColor','w');
-title ('Mesh');
+title = ['Mesh - ' omega];
 hold on

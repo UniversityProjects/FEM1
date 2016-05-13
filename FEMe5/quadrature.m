@@ -6,17 +6,33 @@ function [xhq,yhq,whq]=quadrature(fdq)
 
 switch fdq
     case 'degree=1'  % home made
+        % trapezis
+         integration degree=1  N=3:
         q = [
             0.0 0.0 2/3
             1.0 0.0 2/3
             0.0 1.0 2/3
             ];
     case 'degree=2'
+        % medium points
         % integration degree=2  N=3:
         q = [
             0.1666666666667   0.6666666666667  0.6666666666667
             0.6666666666667   0.1666666666667  0.6666666666667
             0.1666666666667   0.1666666666667  0.6666666666667
+            ];
+    case 'degree=3'
+        % analytic formula, on vertices, medium points and the barycenter
+        % 
+        % integration degree=3  N=7:
+        q = [
+            0.0 0.0 ((1/2)*3/60)*4 % First Vertex
+            1.0 0.0 ((1/2)*3/60)*4 % Second Vertex
+            0.0 1.0 ((1/2)*3/60)*4 % Third Vertex
+            0.5 0.5 ((1/2)*8/60)*4 % First Medium Point
+            0.0 0.5 ((1/2)*8/60)*4 % Second Medium Point
+            0.5 0.0 ((1/2)*8/60)*4 % Third Medium Point
+            1.3 1/3 ((1/2)*27/60)*4 % Barycenter
             ];
     case 'degree=4'
         % integration degree=4  N=6:

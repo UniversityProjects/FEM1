@@ -33,5 +33,4 @@ for iedge=1:nedge
     
 end
 
-title ('Approximated Solution On Edges');
 view(3);

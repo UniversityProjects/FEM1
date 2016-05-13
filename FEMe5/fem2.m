@@ -362,11 +362,11 @@ if (strcmp(exact_solution,'yes'))
     % Jacobian Matrix Computation
  
         % F Jacobian
-        JF = [x2 - x1   x3 - x1
-             y2 - y1   y3 - y1];    
+        JF = [x2-x1   x3-x1
+              y2-y1   y3-y1];    
     
         % Single Element Area
-            area = 0.5*det(JF);
+        area = (1/2)*det(JF);
     
     % Recover Triangle's Edges
         l1 = edges(iele,1); % First Edge
@@ -390,10 +390,10 @@ if (strcmp(exact_solution,'yes'))
             for i=1:6
                 tmp = tmp + uT(i)*phihq(i,q);
             end
-                tmp2 = JF*[xhq(q); yhq(q)] + [x1;y1];
+                tmp2 = JF*[xhq(q);yhq(q)] + [x1;y1];
                 xq = tmp2(1);
                 yq = tmp2(2);            
-                sq = (ue(xq,yq)-tmp)^2 * whq(q);
+                sq = sq + (ue(xq,yq)-tmp)^2 * whq(q);
         end
     
         sq = sq*2*area;
