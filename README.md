@@ -90,7 +90,7 @@ PART II
  
  
  -----
-Lab Sessi on 5
+Lab Session 5
 
 -div(c grad u) = f 	on omega
 
@@ -103,6 +103,18 @@ Second Order Elements
  - L2 error.
  - Added makeue.
  - Added quadrature formula for degree=3.
+
+
+ -----
+Exam Project
+
+-div(c grad u) + beta grad u + alpha u = f 	on omega
+
+
+Second Order Elements
+
+ - Added transport term: beta grad u.
+ - Added reaction term: alpha u.
  
 
 
