@@ -1,0 +1,41 @@
+# is a comment
+
+# Number Of Vertices = 4
+# Dimension = 2 (Fixed) 
+# 0 
+# Boolean that specifies if you want the flag for border. 1: Border, 0 Inside 
+4 2 0 1
+
+# Vertices
+# numbering
+# x coordinate
+# y coordinate
+# border flag
+1 0.0 0.0 1
+2 1.0 0.0 1
+3 1.0 1.0 1
+4 0.0 1.0 1
+
+# Segments number
+4 1
+
+# Segments
+# Numbering
+# First Point
+# Second Point
+# Border Flag
+1 1 2 1
+2 2 3 1
+3 3 4 1
+4 4 1 1
+
+# Holes number
+0
+
+# Area constrain number
+1
+
+# Triangles dimensions
+# The software tries to make triangles as equal as possible
+# Region, Point in region, Area constrain
+1 0.5 0.5 0.05
