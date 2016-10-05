@@ -1,4 +1,4 @@
-# FEMElliptic
+# FEM I 
 Finite Element Methods For Elliptic Problems 
 
 Uses the Matlab languages for the finite element implementation.
