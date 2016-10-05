@@ -89,7 +89,7 @@ PART II
  - Uh plot using only vertices info.
  
  
- -----
+-----
 Lab Session 5
 
 -div(c grad u) = f 	on omega
