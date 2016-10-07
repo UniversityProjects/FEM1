@@ -22,12 +22,3 @@ switch i
         gx = 4 - 4*y - 8*x;
         gy = -4*x;
 end
-
-
-
-
-             
-       
-           
- 
-          

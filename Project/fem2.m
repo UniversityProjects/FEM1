@@ -55,6 +55,7 @@ fdq = 'degree=5';
 % (xhq, yhq) Quadrature's Nodes
 % whq = pesi
 disp('--- Quadrature Computation ---');
+disp([' quadrature: ', fdq]); 
 [xhq,yhq,whq] = quadrature(fdq);
 
 
@@ -157,7 +158,8 @@ for iele=1:nele
                                          )*whq(q);
                 % Reactive Term (First Order)
                 % beta ** grad phi(j,q) * phi (i,q) * whq(q)
-                transport = dot(beta(xq,yq), ...
+                [b1, b2] = beta(xq,yq);
+                transport = dot([b1; b2], ...
                                 JFIT*[gphihqx(j,q); gphihqy(j,q)]...
                                 )*phihq(i,q)*whq(q);
                 % Transport Term (Zeroth Order)
@@ -292,7 +294,7 @@ disp('--- Drawing Approximated Solution On Vertices---');
 drawuhVer;
 
 % Solution Plot
-disp('--- Drawing ApproximatedSolution On Edges---');
+disp('--- Drawing Approximated Solution On Edges---');
 drawuhEdge;
 
 % Uh Max
@@ -323,6 +325,7 @@ if (strcmp(exact_solution,'yes'))
 
     % Quadrature Formula For Error Computing
     fdq = 'degree=5';
+    disp([' quadrature: ', fdq]); 
 
     % (xhq, yhq) Quadrature's Nodes
     % whq = pesi
@@ -378,8 +381,14 @@ if (strcmp(exact_solution,'yes'))
  
         % F Jacobian
         JF = [x2-x1   x3-x1
-              y2-y1   y3-y1];    
-    
+              y2-y1   y3-y1]; 
+           
+        % F Jabobian Inverse
+        JFI = inv(JF);
+     
+        % F Jacobian Inverse Transosed   
+        JFIT = JFI';
+        
         % Single Element Area (Triangle's Area)
         area = (1/2)*det(JF);
     

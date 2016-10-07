@@ -1,7 +1,8 @@
-function z = beta(x, y)
+function [b1, b2] = beta(x, y)
 
 % This function must be positive
-z = 0;
-% z = 1;
+b1 = 0;
+b2 = 0;
 
-return
+% b1 = 1;
+% b1 = 1;
