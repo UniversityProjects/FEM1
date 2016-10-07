@@ -146,29 +146,25 @@ for iele=1:nele
             for q=1:Nq
                 % Image on T (current triangle) Of The Quadrature Node
                 % tmp = (xq, yq) = (xhq(q),yhq(q))
+                % On The Riferiment Element
                 tmp = JF*[xhq(q); yhq(q)] + [x1; y1];
                 xq = tmp(1); % Quadrature Node X Coordinate
                 yq = tmp(2); % Quadrature Node Y Coordinate
-                diffusive = c(xq,yq)*dot(... % Diffusive term
-                                         JFIT*[gphihqx(j,q);...
-                                               gphihqy(j,q)],...
-                                         JFIT*[gphihqx(i,q);...
-                                               gphihqy(i,q)]...
+                % Diffusive term (Second Order)
+                % c * grad phi(j,q) ** grad phi (i,q) * whq(q)
+                diffusive = c(xq,yq)*dot(JFIT*[gphihqx(j,q); gphihqy(j,q)],...
+                                         JFIT*[gphihqx(i,q); gphihqy(i,q)]...
                                          )*whq(q);
-                transport = beta(xq,yq)*dot(... % Reactive Term
-                                         JFIT*[gphihqx(j,q);...
-                                               gphihqy(j,q)],...
-                                         JFIT*[phihq(i,q);...
-                                               phihq(i,q)]...
-                                         )*whq(q);
-                reaction = alpha(xq,yq)*dot(... % Transport Term
-                                         JFIT*[phihq(j,q);...
-                                               phihq(j,q)],...
-                                         JFIT*[phihq(i,q);...
-                                               phihq(i,q)]...
-                                         )*whq(q);
-                KE(i,j) = KE(i,j) + diffusive + transport + reaction;
-            
+                % Reactive Term (First Order)
+                % beta ** grad phi(j,q) * phi (i,q) * whq(q)
+                transport = dot(beta(xq,yq), ...
+                                JFIT*[gphihqx(j,q); gphihqy(j,q)]...
+                                )*phihq(i,q)*whq(q);
+                % Transport Term (Zeroth Order)
+                % alpha * phi(j,q) * phi (i,q) * whq(q)
+                reaction = alpha(xq,yq)*(phihq(j,q)*phihq(i,q))*whq(q);
+                % KE(i,j) Sum Update With All Three Terms
+                KE(i,j) = KE(i,j) + diffusive + transport + reaction;            
             end
             KE(i,j) = 2*area*KE(i,j);
         end
@@ -319,11 +315,11 @@ if (strcmp(exact_solution,'yes'))
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% L2 Error Computation
+% L2 and H1 Error Computation
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 if (strcmp(exact_solution,'yes'))
-    disp('--- L2 Error Computation ---');
+    disp('--- L2 and H1 Error Computation ---');
 
     % Quadrature Formula For Error Computing
     fdq = 'degree=5';
@@ -349,6 +345,12 @@ if (strcmp(exact_solution,'yes'))
     % L2 Error Variable
     errL2sq = 0;
     
+    % H1 Error Variable
+    errH1sq = 0;
+    
+    % Actual Errors Computation
+    % Works By Computing The Global Errors As A Summation
+    % Of The Errors On Every Triangle    
     for iele=1:nele
     
     % Acquire Informations From The iele Elements
@@ -359,15 +361,15 @@ if (strcmp(exact_solution,'yes'))
         v3 = vertices(iele,3);
     
     
-        % Vextx 1 Coordinates
+        % Vertex 1 Coordinates
         x1 = xv(v1);
         y1 = yv(v1);
     
-        % Vextx 2 Coordinates
+        % Vertex 2 Coordinates
         x2 = xv(v2);
         y2 = yv(v2);
     
-        % Vextx 3 Coordinates
+        % Vertex 3 Coordinates
         x3 = xv(v3);
         y3 = yv(v3);  
     
@@ -378,7 +380,7 @@ if (strcmp(exact_solution,'yes'))
         JF = [x2-x1   x3-x1
               y2-y1   y3-y1];    
     
-        % Single Element Area
+        % Single Element Area (Triangle's Area)
         area = (1/2)*det(JF);
     
     % Recover Triangle's Edges
@@ -390,35 +392,56 @@ if (strcmp(exact_solution,'yes'))
 
         % Vertex i ---> i
         % Edge i   ---> nver
-        % This array gives the current triangle's Global Degrees Of Freedom
+        % This row-array holds the current triangle's Global Degrees Of Freedom
         dofg = [v1 v2 v3 (nver+l1) (nver+l2) (nver+l3)];
     
     % Recover the uT coefficients
         uT = uh(dofg);
-    
-        sq = 0;
+        
+        % Tmp variables to hold the element result
+        sqL2 = 0;
+        sqH1 = [ 0; 0];
+        normsqH1 = 0;
+        
+        % Computation Over Weighting Nodes
         for q=1:Nq
             % Compute the sum on phi(i)
-            tmp = 0;        
+            tmpL2 = 0; 
+            tmpH1 = [0; 0];       
             for i=1:6
-                tmp = tmp + uT(i)*phihq(i,q);
+                tmpL2_1 = tmpL2 + uT(i)*phihq(i,q);
+                tmpH1 = tmpH1 + JFIT*uT(i)*[gphihqx(i,q); gphihqy(i,q)];
             end
-                tmp2 = JF*[xhq(q);yhq(q)] + [x1;y1];
-                xq = tmp2(1);
-                yq = tmp2(2);            
-                sq = sq + (ue(xq,yq)-tmp)^2 * whq(q);
+            % Error Computation
+            tmpL2_2 = JF*[xhq(q);yhq(q)] + [x1;y1];
+            xq = tmpL2_2(1);
+            yq = tmpL2_2(2);            
+            sqL2 = sqL2 + (ue(xq,yq) - tmpL2)^2 * whq(q);
+            %sqH1 = sqH1 + [ux(xq,yq); uy(xq,yq)] - tmpH1;
+            sqH1 = sqH1 + ue(xq,yq) - tmpH1;
+            normsqH1 = normsqH1 + dot(sqH1, sqH1)*whq(q);
         end
     
-        sq = sq*2*area;
+        sqL2 = 2*area*sqL2;
+        normsqH1 = 2*area*normsqH1;
         
-        errL2sq = errL2sq + sq;
+        % L2 Error On The Element (Squared)
+        errL2sq = errL2sq + sqL2;
+        
+        % H1 Error On The Element (Squared)
+        % ErrH1 = errL2(u) + errL2(grad u)
+        errH1sq = errH1sq + errL2sq + normsqH1;
         
     end  
     
-    % Final Error Computation
+    % Final L2 Error Computation
     errL2 = sqrt(errL2sq);
     
+    % Final H1 Error Computation
+    errH1 = sqrt(errH1sq);
+    
     disp(['      L2 Error: ' num2str(errL2)]);
+    disp(['      H1 Error: ' num2str(errH1)]);
     
     
 end
