@@ -106,15 +106,15 @@ for iele=1:nele
     v3 = vertices(iele,3);
     
     
-    % Vextx 1 Coordinates
+    % Vertex 1 Coordinates
     x1 = xv(v1);
     y1 = yv(v1);
     
-    % Vextx 2 Coordinates
+    % Vertex 2 Coordinates
     x2 = xv(v2);
     y2 = yv(v2);
     
-    % Vextx 3 Coordinates
+    % Vertex 3 Coordinates
     x3 = xv(v3);
     y3 = yv(v3);  
     
@@ -153,8 +153,10 @@ for iele=1:nele
                 yq = tmp(2); % Quadrature Node Y Coordinate
                 % Diffusive term (Second Order)
                 % c * grad phi(j,q) ** grad phi (i,q) * whq(q)
-                diffusive = c(xq,yq)*dot(JFIT*[gphihqx(j,q); gphihqy(j,q)],...
-                                         JFIT*[gphihqx(i,q); gphihqy(i,q)]...
+                diffusive = c(xq,yq)*dot(JFIT*[gphihqx(j,q);... 
+                                               gphihqy(j,q)],...
+                                         JFIT*[gphihqx(i,q);...
+                                               gphihqy(i,q)]...
                                          )*whq(q);
                 % Reactive Term (First Order)
                 % beta ** grad phi(j,q) * phi (i,q) * whq(q)
