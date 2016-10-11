@@ -1,0 +1,334 @@
+\documentclass[12pt,a4paper]{report}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{url}
+\usepackage{graphicx}
+\usepackage{imakeidx}
+\usepackage{pdfpages}
+\usepackage{listings}
+\usepackage{color}
+\usepackage{cite}
+\usepackage[top=2cm, bottom=1.5cm, outer=2.5cm, inner=2.5cm, marginparsep=0.7cm, marginparwidth=1.5cm]{geometry}
+
+\usepackage{hyperref}
+
+% Definition Introduction
+\theoremstyle{theorem}
+\newtheorem{theorem}{Theorem}[section]
+
+% Definition Introduction
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[section]
+
+% Example Introduction
+\newtheorem{example}{Example}
+
+% Principle Introduction
+\newtheorem{principle}{Principle}
+
+% System Introduction
+\newenvironment{system}
+{\left\lbrace\begin{array}{@{}l@{}}}
+{\end{array}\right.}
+
+% Restriction Command
+\newcommand\restr[2]{{% we make the whole thing an ordinary symbol
+  \left.\kern-\nulldelimiterspace % automatically resize the bar with \right
+  #1 % the function
+  %\vphantom{\big} % pretend it's a little taller at normal size
+  \right|_{#2} % this is the delimiter
+  }}
+
+% Blacksquare as QED Symbol
+\renewcommand\qedsymbol{$\blacksquare$}
+
+% Make Index [column=colnumber, title=mytitle, 
+%			 intoc%%Index Added To TableOfContents%%,
+%			 options= -s "stile ist file"]
+\makeindex[columns=1, title=Index, intoc, options= -s mystile.ist]
+
+\author{Saporito Francesco}
+\title{Relazione Approssimazione Di Equazioni Differenziali}
+\date{\today}
+
+\begin{document}
+
+
+
+\maketitle
+
+\tableofcontents
+
+\includepdf[addtotoc={1,chapter,-,Testo Progetto,chap:project_test}, pages=-]{RelazioneProgettoEsame.pdf} 
+
+\chapter{Introduzione agli Elementi Finiti}
+
+\section{Introduzione}
+In questo capitolo richiamiamo i concetti base del metodo agli elementi finiti per risolvere problemi ellittici del secondo ordine.\\
+Il problema differenziale generale che affronteremo è del tipo:\\\\ \index{DirichletProblem} \label{DirichletProblem}
+\begin{math}
+\begin{system}
+-div(c\nabla{u})+\beta \cdot \nabla{u} + \alpha u = f \qquad \qquad \ \Omega \\
+u = g \qquad \qquad \qquad \qquad \qquad \qquad \qquad \quad \partial \Omega \\
+\end{system}
+\end{math}
+\hfill \\\\
+dove $\Omega \in \Re^{n}$ e dove con $\partial \Omega$ intendiamo il bordo relativo al dominio $\Omega$. I vari termini dell'equazione possono essere caratterizzati nel modo seguente:
+\begin{itemize}
+	\item \textbf{Termine Di Diffusione} $-div(c\nabla{u})$
+	\item \textbf{Termine Di Avezione} $\beta \cdot \nabla{u}$
+	\item \textbf{Termine Di Reazione} $\alpha u$	
+\end{itemize}
+Al bordo abbiamo considerato la condizione non omogenea di Dirichlet $u = g$. Sono possibili altri tipi di condizioni al bordo, ad esempio:
+\begin{itemize}
+	\item \textbf{Neumann} Condizione sulla derivata normale al bordo della funzione.
+	\item \textbf{Cauchy} Impone al bordo sia una condizione di Dirichlet che una di Neumann.
+	\item \textbf{Robin} Impone al bordo una condizione ottenuta come combinazione lineare di una condizione di Dirichlet e di una di Neumann.
+\end{itemize}
+L'equazione ellittica del secondo ordine è molto importante per la modellizzazione di problemi stazionari (ovveero indipendenti dal tempo), e infatti molte altre equazioni si riducono ad una riconducibile al caso ellittico nel regime stazionario. Forniamo alcuni esempi fisici modellizzati da questa equazione:
+\begin{example} [Equazione di Poisson]
+\hfill \\
+Il caso più semplice è l'equazione di Poisson:\\\\
+\begin{math}
+\begin{system}
+- \Delta u = f \qquad \qquad \quad \ \Omega \\
+u = g \qquad \qquad \qquad \quad \partial \Omega \\
+\end{system}
+\end{math}
+\hfill \\\\
+dove $\Delta$ è l'operatore di Laplace, definito come:
+\[ \Delta = div \nabla \]
+Questa equazione modellizza ad esempio problema del calore stazionario \cite{MNV1}, \cite{Salsa} o il problema generale dell'elettrostatica in presenza di cariche \cite{MNV2}.
+\qed
+\end{example}
+\begin{example} [Equazione di Fick Stazionaria]
+\hfill \\
+L'equazione di Fick descrive la variazione di concentrazione nei materiali in cui è presente diffusività molecolare ma non termica. Nel caso stazionario (ovvero che studia solo la diffusione spaziale senza considerare il tempo), abbiamo:\\\\
+\begin{math}
+\begin{system}
+- D\Delta u + v \nabla u = f \qquad \qquad \quad \ \Omega \\
+\partial_{\eta} u = 0 \quad \qquad \qquad \qquad \qquad \quad \partial \Omega \\
+\end{system}
+\end{math}
+\hfill \\\\
+dove al bordo sono state supposte condizioni di Neumann omogenee, a significare che non c'è diffusione attraverso il bordo del dominio (caso che invece avviene se ad esempio il bordo è poroso).
+\qed
+\end{example}
+{ \color{blue} SEZIONE FINITA\\}
+
+\section{Metodi Variazionali}
+Vogliamo dunque risolvere un problema del tipo \ref{DirichletProblem}. Esso in particolare per essere ben definito richiedere ad esempio che la soluzione $u$ sia almeno di classe $C^2(\Omega)$. Questo limita molto la capacità di modellizzazione per problemi fisici reali (ad esempio che presentano discontinuità). Inolte non è detto che sia possibile trovare una soluzione in forma chiusa del problema. Per provare ad ovviare a questi problemi proviamo a passare ad una formulazione equivalente detta formulazione variazionale o debole, che permette alla funzione $u$ di essere meno regolare di quanto previsto dal problema differenziale. I riferimenti principali per questa sezione sono \cite{Brezis} e \cite{Evans}.\\
+Consideriamo inizialmente il seguente problema omogeneo:\\\\
+\index{DirichletProblemHom} \label{DirichletProblemHom}
+\begin{math}
+\begin{system}
+-div(c\nabla{u})+\beta \cdot \nabla{u} + \alpha u = f \qquad \qquad \quad \ \Omega \\
+u = 0 \quad \qquad \qquad \qquad \qquad \qquad \qquad \qquad \quad \partial \Omega \\
+\end{system}
+\end{math}
+\hfill \\\\
+ricordiamo inanzitutto la definizione di derivata debole:
+\begin{definition} [\textbf{Derivata Debole}]
+\hfill \\
+Per la formula di integrazione per parti abbiamo che se $f \in C^{\mid \alpha \mid}(\Omega)$ e $g \in C_{0}^{\mid \alpha \mid}(\Omega)$, con $\alpha$ multi-indice, allora vale:
+\[ \int_{\Omega} { (\partial^{\alpha} f) \, g \; dx } \quad = \quad (-1)^{\mid \alpha \mid} \int_{\Omega} { f \, (\partial^{\alpha} \, g) \;dx } \]
+da cui, se $f$ è localmente integrabile su $\Omega$, allora diciamo che una funzione $g$ è la sua $\alpha$-derivata debole, definita (quasi ovunque) come
+\[ g = D^{ \alpha }f \]
+se $\forall \phi \in  C_{0}^{\mid \alpha \mid}(\Omega)$ abbiamo
+\[ \int_{\Omega} { g \, \phi \; dx } \quad = \quad (-1)^{\mid \alpha \mid} \int_{\Omega} { f \, (\partial^{\alpha} \phi) \; dx} \]
+\qed
+\end{definition}
+\hfill \\
+il concetto di derivata debole risulta quindi un'estensione a quello di derivazione classica, infatti ogni funzione di classe $C^k$ ha $k$-derivata debole.
+Attraverso la definizione di derivata debole possiamo definire lo spazio di Sobolev $\mathbb{H}^{1}(\Omega)$:
+\begin{definition} [\textbf{$\mathbb{H}^{1}(\Omega)$}]
+\hfill \\
+\[ \mathbb{H}^{1}(\Omega) \quad = \quad \left \{ v \in \mathbb{L}^{2}(\Omega): \quad \nabla{v} \in \mathbb{L}^{2}(\Omega) \right \}	\]
+dove il gradiente è inteso come derivazione debole analogamente a come definito sopra. Questo spazio risulta essere uno spazio di Hilbert con prodotto scalare:
+\[ < v, v' >_{\mathbb{H}^{1}(\Omega)} \quad = \quad < v, v' >_{\mathbb{L}^{2}(\Omega)} + < \nabla{v}, \nabla{v}' >_{\mathbb{L}^{1}(\Omega)}\]
+ovvero con norma indotta dal prodotto scalare:
+\[ \mid \mid v \mid \mid _{\mathbb{H}^{1}(\Omega)}\quad = \quad \mid \mid v \mid \mid _{\mathbb{L}^{2}(\Omega)} + \mid \mid \nabla{v} \mid \mid _{\mathbb{L}^{2}(\Omega)} \]
+\qed
+\end{definition}
+Questo spazio è dunque l'insieme delle funzioni di $L^{2}(\Omega)$ con derivate deboli prime (espresse tramite il gradiente) anch'esse in $L^{2}(\Omega)$. In questo spazio (o in un suo sottospazio) andremo a cercare le soluzioni deboli della formulazione variazionale. \\
+L'idea dietro alla formulazione debole è che il problema differenziale è scritto localmente. Vogliamo però scriverlo in forma globale, in modo da poter considerare funzioni meno regolari, attraverso il concetto di derivata debole.
+\begin{theorem} [Problema Ellitico In Forma Variazionale] \label{Problema Ellittico Debole}
+\hfill \\
+Il problema ellittico \ref{DirichletProblemHom} può essere riscritto in forma variazionale nel seguente modo:\\
+Trovare $u \in  \mathbb{V} \, = \, \mathbb{H}^{1}(\Omega)$ tale che:
+\[ \int_{\Omega}{c \, \nabla u \nabla v \; dx} \; + \; \int_{\Omega}{(\beta \cdot \nabla u) \, v \; dc} \; + \; \int_{\Omega}{\alpha \, u \, v \; dx} \quad = \quad \int_{\Omega}{f \, v \; dx} \qquad \forall v \in \mathbb{V} \, = \, \mathbb{H}^{1}(\Omega) \]
+dove $u$ è detta soluzione debole del problema variazionale.
+\end{theorem}
+\hfill \\
+\emph{Dimostrazione}\\
+Condideriamo l'equazione
+\[ -div(c\nabla{u}) \ + \ \beta \cdot \nabla{u} \ + \ \alpha u \ = \ f \]
+e moltiplichiamo entrambi i membri per una funzione $v \in C^{\infty}(\Omega)$:
+\[ -div(c\nabla{u}) \, v \ + \ (\beta \cdot \nabla{u}) \, v \ + \ \alpha u v \ = \ f \, v\]
+integriamo dunque su tutto il dominio $\Omega$ rispetto alla misura di Lebesgue $dx$ del dominio:
+\[ - \ \int_{\Omega}{div(c\nabla{u}) \, v \; dx} \ + \ \int_{\Omega}{(\beta \cdot \nabla{u}) \, v \; dx} \ + \ \int_{\Omega}{\alpha \, u \, v \; dx} \ = \ \int_{\Omega}{f  \, v \; dx}\]
+consideriamo il primo integrale. Per le proprietà della divergenza se $f$ è una funzione scalare e se $\mathbb{F}$ è un campo vettoriale, allora vale:
+\[ div(f \mathbb{F}) \ = \  \nabla f \cdot \mathbb{F} \ + \ f div(\mathbb{F})\]
+considerando dunque $f \ = \ v$ e $\mathbb{F} \ = c \nabla u$, abbiamo
+\[ div(v c \nabla u) \ = \  \nabla v (c \nabla u) \ + \ v \, div(c \nabla u)\]
+ovvero
+\[ v \, div(c \nabla u) \ = \ div(v \, c \, \nabla u) \ - \ c \, \nabla v \nabla u \]
+sostituendo nell'integrale abbiamo
+\[ - \ \int_{\Omega}{div(c\nabla{u}) \, v \; dx} \ = \ \int_{\Omega}{c \, \nabla v \nabla u \; dx} \ - \ \int_{\Omega}{div(v \, c \nabla u) \; dx}\]
+possiamo quindi applicare il teorema della divergenza
+\[ \int_{\Omega}{div(v \, c \nabla u) \; dx} \ = \ \int_{\partial \Omega}{ (v \, c \nabla u) \cdot \eta \, \, \; d \sigma (x)}\]
+dove $\eta$ è il versore normale e $d \sigma (x) $ è la misura superficiale dell'ipersuperficie $(n-1)$-dimensionale $\partial \Omega $ \footnote{La misura superficiale differisce dalla misura di Lebesgue in quanto tiene conto anche della curvatura dello spazio}. La funzione $u$ è però nulla sul bordo, e quindi l'integrale su $\partial \Omega$ è nullo. Otteniamo cosi la forma debole:
+\[ \int_{\Omega}{c \, \nabla u \nabla v \; dx} \; + \; \int_{\Omega}{(\beta \cdot \nabla u) \, v \; dc} \; + \; \int_{\Omega}{\alpha \, u \, v \; dx} \quad = \quad \int_{\Omega}{f \, v \; dx} \]
+dobbiamo però caratterizzare la regolarità delle funzioni $u$, $v$ e $f$ presenti, affinche questa forma debole sia ben definita.
+Inanzitutto sia $u$ che $v$ devono avere derivata debole di ordine $1$. Affinchè poi gli integrali siano definiti e convergenti, dobbiamo avere che $u$, $v$, ed $f$ devono essere almeno in $L^{2}(\Omega)$, cosi come i gradienti (intesi nel senso della derivazione debole) di $u$ e $v$. Ciò implica quindi che sia $u$ che $v$ devono appartenere a $ \mathbb{V} \, = \, \mathbb{H^1}(\Omega)$. Inoltre abbiamo imposto le condizioni omogeneee di Dirichlet. Possiamo quindi considerare il sottospazio di funzioni di $ \mathbb{V} \, = \, \mathbb{H}^1{\Omega}$:
+\[  \mathbb{V}_{0} \, = \, \mathbb{H}_{0}^1{\Omega} \ = \ \left \{ \, v \in \mathbb{H}^1{\Omega} \, :  \, \restr{v}{\partial \Omega} = 0 \, \right \} \ \subset \  \mathbb{V} \, = \, \mathbb{H}^1{\Omega} \]
+da cui risulta che
+\begin{itemize}
+	\item $f \in L^{2}(\Omega)$
+	\item $u, \, v \in \mathbb{H}_{0}^1{\Omega}$
+\end{itemize}
+\qed
+\hfill \\
+allo stesso modo si può procedere per il caso non omogeneo \ref{DirichletProblem}, dove però al bordo l'integrale non è più nullo, ma va considerato con $u = g$ a livello di tracce.
+\hfill \\
+Il problema in forma debole \ref{Problema Ellittico Debole}, può essere espresso in forma astratta:
+\begin{definition} [Problema Astratto] \label{Problema Astratto}
+\hfill \\
+Trovare $u \in  \mathbb{V}$, con $\mathbb{V}$ spazio di Hilbert, tale che
+\[ a(u,v) = F(v) \qquad \qquad \forall v \, \in \mathbb{V} \]
+dove
+\begin{itemize}
+	\item $a: V \times V \rightarrow \Re \quad $ è una forma bilineare 
+	\item $F: V \rightarrow \Re \quad $ è un funzionale lineare, ovvero $F \in \mathbb{V}'$.
+\end{itemize}
+\qed
+\end{definition}
+Nel nostro caso particolare \ref{Problema Ellittico Debole}  il problema astratto è formato da:
+\begin{definition} [Problema ellittico astratto] \label{Problema Ellittico Astratto}
+\begin{itemize}
+	\item $\mathbb{V} = \mathbb{H}^1(\Omega)$
+	\item $a(u,v) \ = \ \int_{\Omega}{c \, \nabla u \nabla v \; dx} \; + \; \int_{\Omega}{(\beta \cdot \nabla u) \, v \; dc} \; + \; \int_{\Omega}{\alpha \, u \, v \; dx}$
+	\item $F(v) \ = \ \int_{\Omega}{f \, v \; dx}$
+\end{itemize}
+\qed
+\end{definition}
+Il lemma di Lax-Milgram fornisce un risultato di esistenza e unicità della soluzione (debole) al problema astratto, che coincide dunque con l'esistenza e unicità della soluzione di \ref{Problema Ellittico Debole} e di \ref{DirichletProblemHom}:
+\begin{theorem} [Lax-Milgram - 1954] \label{Lemma di Lax-Milgram}
+\hfill \\
+Esiste ed è unica la soluzione debole $u \in \mathbb{V}$ di Hilbert per il problema astratto \ref{Abstract Problem} se:
+\begin{itemize}
+	\item $a(u,v)$ è continua: $\qquad a(u,v) \ \leq \ M \mid \mid u \mid \mid_{\mathbb{V}} \, \mid \mid v \mid \mid_{\mathbb{V}}$
+	\item $a(u,v)$ è coerciva: $\qquad \ a(v,v) \ \geq \ c \mid \mid v \mid  \mid_{\mathbb{V}}^{2}$
+	\item $F(v)$ è continua: $\qquad \quad F(v) \ \leq \ C \mid \mid v \mid \mid_{\mathbb{V}}$
+\end{itemize}
+
+\end{theorem}
+Questo lemma è stato in seguito generalizzato da Babuska \cite{babuska1971BLM}, in modo da considerare due spazi di appartenzenza diversi per $u$ e per $v$ e indebolendo la richiesta sulla coercività (richiedendo la coercività debole).\\
+Nel caso in cui $a(u,v)$ sia anche simmetrica, tale forma è un prodotto scalare, e il lemma di Lax-Milgram deriva direttamente dal teorema di rappresentazione di Riesz. \\
+Nel caso particolare di \ref{Problema Ellittico Astratto}, si può dimostrare che affinchè valgano le condizioni delle ipotesi del lemma di Lax-Milgram \ref{Lemma di Lax-Milgram}, le funzioni caratterizzanti il problema devono rispettare le seguenti:
+\begin{itemize}
+	\item $c(\underline{x}) \in \L^{\infty} \qquad c_{max} \ \geq \ c(\underline{x}) \ \geq \ c_{min} \ > \ 0 $
+	\item $\alpha(\underline{x}) \in \L^{2}(\Omega), \ \beta(\underline{x}) \in C^{1}(\Omega) \qquad \alpha \, - \, div \beta \ = \ 0$
+	\item $f(\underline{x}) \in \L^{2}(\Omega)$
+\end{itemize}
+{ \color{blue} SEZIONE FINITA\\}
+
+\section{Metodo Galerkin}
+Abbiamo visto che il problema astratto \ref{Problema Ellittico Astratto} ammette soluzione unica se la forma bilineare $a(u,v)$ è continua e coerciva, e se la forma lineare $F(v)$ è continua. Non esiste però un metodo generale per trovare la soluzione esatta al problema astratto in forma chiusa su un qualunque dominio $\Omega$ (soluzione che non è detto che sia formulabile in forma chiusa). Per risolvere il problema dobbiamo quindi tentare di stimare la soluzione esatta con una soluzione approssimata, valutandone poi l'errore di approssimazione. La principale bibliografia per questa sezione è formata da \cite{BS}, \cite{Ciarlet} e \cite{Q}.\\
+Uno dei metodi principali che consente questo processo è quello di Galerkin \footnote{Un altro metodo rilevante, ma più semplice è quello delle differenze finite, in cui si approssimano direttamente le derivate sui nodi per riformulare l'equazione in modo approssimato}:
+\begin{definition} [Metodo Galerkin]
+\hfill \\
+Il metoodo Galerkin consiste di approssimare lo spazio continuo $\mathbb{V}$ con un suo sottospazio discreto $\mathbb{V}_{h} \in \mathbb{V}$.\\
+In questo modo possiamo riscrivere il problema astratto in forma discreta sullo spazio $\mathbb{V}_{h}$:\\
+Trovare $u_{h} \in  \mathbb{V}_{h}$, tale che
+\[ a(u_{h},v_{h}) = F(v_{h}) \qquad \qquad \forall v_{h} \, \in \mathbb{V}_{h} \]
+detta equazione di Galerkin. \footnote{Notiamo che la forma dell'equazione non cambia tra il problema continuo e quello discreto, cambiano invece gli spazi con cui lavoriamo}
+\qed
+\end{definition}
+\hfill \\
+dato che $\mathbb{V}_{h} \in \mathbb{V}$, continuano a valere le ipotesi del lemma di Lax-Milgram \ref{Lemma di Lax-Milgram}, e quindi la soluzione al problema discreto esiste ed è unica. Inoltre vale la seguente relazione tra la soluzione del problema continuo e quella del problema approssimato:
+\begin{definition} [Ortogonalità Di Galerkin[]
+\hfill \\
+Sia $u$ la soluzione esatta del problema continuo e sia $u_{h}$ la soluzione del problema discreto. Definito l'errore $\epsilon_{h}$ come
+\[ \epsilon_{h} \ = \ u \, - \, u_{h} \]
+allora abbiamo che, sottraendo i due problemi membro a membro
+\[ a(u,v) \, - \, a(u_{h}, v_{h}) \ =  \ f(v) \, - \, f(v_{h}) \]
+possiamo perè restringere le funzioni $v$ allo spazio $\mathbb{V}_h$, ovvero considerare
+\[ a(u,v_{h}) \, - \, a(u_{h}, v_{h}) = f(v_{h}) \, - \, f(v_{h}) = 0) \]
+per linearità della forma $a$ abbiamo
+\[ a(u,v_{h}) \, - \, a(u_{h}, v_{h}) \ =  \ a(u \, - \, u_{h}, v_{h}) \ =  \ a(\epsilon_{h},v_{h}) = 0 \]
+nel caso in cui la forma $a(\cdot,\cdot)$ sia simmetrica (ovvero è un prodotto scalare), abbiamo che l'errore $\epsilon_{h}$ è ortogonale ad ogni funzione $\forall v_{h} \in \mathbb{V}_{h}$, e quindi è ortogonale all'intero spazio $\mathbb{V}_{h}$.
+\qed
+\end{definition}
+\hfill \\
+E' possibile inoltre dare una stima dell'errore compiuto, attraverso il lemma di Cèa:
+\begin{theorem} [Lemma di Cèa]
+\hfill \\
+L'errore compiuto con l'approssimazione tramite il problema discreto permette la seguente stima:
+\[ \mid \mid \ u \, - \, u_{h} \ \mid \mid_{\mathbb{V}(\Omega)} \quad \leq \quad \frac{M}{c} \ Inf_{v_{h} \in \mathbb{V}_{h}} \mid \mid \ u \, - \, v_{h} \ \mid \mid_{\mathbb{V}(\Omega)} \]
+dove $M$ è la costante della continuità e $c$ quella della coercività di $a(\cdot,\cdot)$.
+\qed
+\end{theorem}
+\hfill \\
+L'approssimazione tramite lo spazio $\mathbb{V}_{h}$ consente inoltre di trasformare il problema continuo in un sistema lineare di equazioni. Dato che lo spazio $\mathbb{V}_{h}$ è un sottospazio vettoriale finito, possiamo considerarne una base
+\[ \overline{\phi} = \left \{ \phi_{i} \right \} \qquad \qquad i = 1,..., n = \dim{V_{h}} \]
+e quindi possiamo sviluppare la funzione $u_{h}$ rispetto ad essa:
+\[ u_{h} = \sum_{i = j}^{n} u_{j} \ \phi_{j} \]
+è inoltre possibile dimostrare che l'approssimazione vale anche considerando il problema solo riferito alle basi, ovvero sostituendo alle funzioni $v_{h}$ le funzioni di base $\phi_{i}$
+%\[ a \bigg \left( \sum_{j = 1}^{n} u_{j} \ \phi_{j},v_{h} \bigg \right) = F(v_{h}) \]
+\[ a \ \left( \sum_{j = 1}^{n} u_{j} \ \phi_{j} \ , \ \phi_{i} \right) \ = \ F \ \left(  \phi_{i} \right) \]
+Sfruttando la linearità di $a(\cdot,\cdot)$ otteniamo:
+\[ \sum_{j = 1}^{n} u_{j} \ a \, \left( \phi_{j} \ , \ \phi_{i} \right) \ = \ F \ \left(  \phi_{i} \right) \]
+e sommando su tutte le funzioni di base (ovvero rispetto all'indice $i$):
+\[ \sum_{i = 1}^{n} \sum_{j = 1}^{n} u_{j} \ a \, \left( \phi_{j} \ , \ \phi_{i} \right) \ = \ \sum_{i = 1} F \ \left(  \phi_{i} \right) \]
+ovvero abbiamo ridotto il problema ad un sistema lineare di equazioni:
+\[ K_{h} \, \underline{u} \; = \; \underline{f} \]
+dove in particolare la matrice $Kh$, detta matrice di stiffness, è definita come:
+\[ (K_{h})_{i,j} \ = \ a \, \left( \phi_{j} \ , \ \phi_{i} \right) \]
+{ \color{red} DA AGGIUNGERE CASO NON OMOGENE0\\}
+{ \color{red} MODIFICARE DA $\mathbb{V}$ A $\mathbb{V_{0}}$\\}
+
+\section{Elementi Finiti}
+Il metodo di Galerkin fornisce l'idea di approssimare il problema continuo con quello discreto, ma non da vincoli su come fare questa approssimazione. Gli elementi finiti sono un metood di Galerkin in cui l'approssimazione viene fatta considerando polinomi su elementi di una partizione del dominio.
+{ \color{red} DA AGGIUNGERE DEFINIZIONE GENERALE ELEMENTI FINITI E MESHING\\}
+{ \color{red} DA AGGIUNGERE ERRORI ELEMENTI FINITI\\}
+{ \color{red} DA AGGIUNGERE ELEMENETO DI RIFERIMENTO\\}
+{ \color{red} DA AGGIUNGERE CALCOLO ESPLICITO\\}
+
+\chapter{Codice Matlab}
+\lstdefinestyle{matlab}{
+  belowcaptionskip=1\baselineskip,
+  breaklines=true,
+  frame=L,
+  %xleftmargin=\parindent,
+  %xleftmargin=\hangindent,
+  language=matlab,
+  showstringspaces=false,
+  basicstyle=\footnotesize\ttfamily,
+  keywordstyle=\bfseries\color{green!40!black},
+  commentstyle=\itshape\color{purple!40!black},
+  identifierstyle=\color{blue},
+  stringstyle=\color{orange},
+}
+
+Riportiamo di seguito il codice Matlab in cui si presenta un'implementazione del metodo agli elementi finiti per il problema ellittico \ref{DirichletProblem} nel caso particolare di un dominio $\Omega \in \Re^{2}$. Riportiamo solo il programma principale \emph{fem2.m}, mentre le altre funzioni di supporto utilizzate (come ad esempio per la generazione della mesh, per le formule di quadratura o per i grafici), possono essere trovate online al sito \url{https://github.com/UniversityProjects/FEM1/tree/master/Project}
+%\lstinputlisting[language=Matlab]{fem2.m}
+\lstinputlisting[caption=Elementi Finiti Di Ordine Due Per Il Problema Ellittico, style=matlab]{fem2.m}
+
+
+\chapter{Esperimenti Numerici}
+Consideriamo in questo capitolo un confronto tra soluzione esatta e soluzione approssimata per verificare a livello pratico i risultati teorici di convergenza rispetto al parametro geometrico $h$ della specifica mesh.
+
+
+\printindex
+
+% \bibliographystyle{ieeetr}
+\bibliographystyle{alpha}
+%\bibliographystyle{plain}
+\bibliography{mybib,pde_num}
+\addcontentsline{toc}{chapter}{Bibliography}
+
+\end{document}
