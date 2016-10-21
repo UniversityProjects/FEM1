@@ -388,7 +388,7 @@ if (strcmp(exact_solution,'yes'))
         % F Jabobian Inverse
         JFI = inv(JF);
      
-        % F Jacobian Inverse Transosed   
+        % F Jacobian Inverse Transposed   
         JFIT = JFI';
         
         % Single Element Area (Triangle's Area)
@@ -417,17 +417,17 @@ if (strcmp(exact_solution,'yes'))
         % Computation Over Weighting Nodes
         for q=1:Nq
             % Compute the sum on phi(i)
-            tmpL2 = 0; 
+            tmpL2_1 = 0; 
             tmpH1 = [0; 0];       
             for i=1:6
-                tmpL2_1 = tmpL2 + uT(i)*phihq(i,q);
+                tmpL2_1 = tmpL2_1 + uT(i)*phihq(i,q);
                 tmpH1 = tmpH1 + JFIT*uT(i)*[gphihqx(i,q); gphihqy(i,q)];
             end
             % Error Computation
             tmpL2_2 = JF*[xhq(q);yhq(q)] + [x1;y1];
             xq = tmpL2_2(1);
             yq = tmpL2_2(2);            
-            sqL2 = sqL2 + (ue(xq,yq) - tmpL2)^2 * whq(q);
+            sqL2 = sqL2 + (ue(xq,yq) - tmpL2_1)^2 * whq(q);
             %sqH1 = sqH1 + [ux(xq,yq); uy(xq,yq)] - tmpH1;
             sqH1 = sqH1 + ue(xq,yq) - tmpH1;
             normsqH1 = normsqH1 + dot(sqH1, sqH1)*whq(q);
@@ -456,4 +456,5 @@ if (strcmp(exact_solution,'yes'))
     
     
 end
+    
     
