@@ -292,10 +292,10 @@ fh = b(NL);
 uh(NL) = Kh\fh;
 
 % Solution Plot On Vertices
-disp('--- Drawing Approximated Solution On Vertices---');
-drawuhVer;
+% disp('--- Drawing Approximated Solution On Vertices---');
+% drawuhVer;
 
-% Solution Plot
+% Solution Plot On Edges
 disp('--- Drawing Approximated Solution On Edges---');
 drawuhEdge;
 
@@ -309,10 +309,10 @@ disp(['--- Uh max: ' num2str(max(uh)) ' ---']);
 
 if (strcmp(exact_solution,'yes'))
     % Exact Solution Plot On Vertices
-    disp('--- Drawing Exact Solution On Vertices---');
-    %drawueVer;
+    % disp('--- Drawing Exact Solution On Vertices---');
+    % drawueVer;
 
-    % Exact Solution Plot
+    % Exact Solution Plot On Edges
     disp('--- Drawing Exact Solution On Edges---');
     drawueEdge;   
     
@@ -456,5 +456,4 @@ if (strcmp(exact_solution,'yes'))
     
     
 end
-    
     
