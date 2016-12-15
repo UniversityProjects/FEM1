@@ -10,4 +10,10 @@
 % -Q No output except for errors
 
 % Generate the mesh specified in the .poly file
-system(['triangle -pqanI ' omega '.poly']);
+% -p Triangulates a Planar Straight Line Graph (.poly file). 
+% -q: Quality mesh, no triangles with angless less than 20
+% -a: Imposes a maximum triangle area constraint
+% -n: Suppresses mesh iteration numbers. 
+% -I: Uses only vertical cuts in the divide-and-conquer algorithm
+% -Q: quiet, no output unless errors occur
+system(['triangle -pqanIQ ' omega '.poly']);

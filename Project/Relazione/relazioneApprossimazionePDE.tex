@@ -4,20 +4,28 @@
 \usepackage{amsfonts}
 \usepackage{amssymb}
 \usepackage{amsthm}
+\usepackage{mathtools}
 \usepackage{url}
 \usepackage{graphicx}
+\usepackage{tikz}
+\usepackage{tkz-euclide}
+\usetikzlibrary{matrix,arrows,shapes.geometric}
+\usetkzobj{all}
 \usepackage{imakeidx}
 \usepackage{pdfpages}
 \usepackage{listings}
 \usepackage{color}
 \usepackage{cite}
 \usepackage[top=2cm, bottom=1.5cm, outer=2.5cm, inner=2.5cm, marginparsep=0.7cm, marginparwidth=1.5cm]{geometry}
-
 \usepackage{hyperref}
 
-% Definition Introduction
+% Theorem Introduction
 \theoremstyle{theorem}
 \newtheorem{theorem}{Theorem}[section]
+
+% Lemma Introduction
+\theoremstyle{theorem}
+\newtheorem{lemma}{Lemma}[section]
 
 % Definition Introduction
 \theoremstyle{definition}
@@ -45,6 +53,31 @@
 % Blacksquare as QED Symbol
 \renewcommand\qedsymbol{$\blacksquare$}
 
+% Abs Command: | |
+\providecommand{\abs}[1]{\lvert \, #1 \, \rvert}
+
+% Norm Command: || ||
+\providecommand{\norm}[1]{\lVert \, #1 \, \rVert}
+
+% TriNorm Command: ||| |||
+\providecommand{\trinorm}[1]{\lVert \abs{ \, #1 \, } \rVert}
+
+% Matlab Style Definition
+\lstdefinestyle{matlab}{
+  belowcaptionskip=1\baselineskip,
+  breaklines=true,
+  frame=L,
+  %xleftmargin=\parindent,
+  %xleftmargin=\hangindent,
+  language=matlab,
+  showstringspaces=false,
+  basicstyle=\footnotesize\ttfamily,
+  keywordstyle=\bfseries\color{green!40!black},
+  commentstyle=\itshape\color{purple!40!black},
+  identifierstyle=\color{blue},
+  stringstyle=\color{orange},
+}
+
 % Make Index [column=colnumber, title=mytitle, 
 %			 intoc%%Index Added To TableOfContents%%,
 %			 options= -s "stile ist file"]
@@ -60,7 +93,7 @@
 
 \tableofcontents
 
-\includepdf[addtotoc={1,chapter,-,Testo Relazione,chap:project_test}, pages=-]{RelazioneProgettoEsame.pdf} 
+%\includepdf[addtotoc={1,chapter,-,Testo Relazione,chap:project_test}, pages=-]{RelazioneProgettoEsame.pdf} 
 
 \chapter{Elementi Finiti Per Problemi Ellittici}
 
@@ -80,7 +113,7 @@ dove $\Omega \in \Re^{n}$ e dove con $\partial \Omega$ intendiamo il bordo relat
 	\item \textbf{Termine Di Avezione} $\beta \cdot \nabla{u}$
 	\item \textbf{Termine Di Reazione} $\alpha u$	
 \end{itemize}
-Al bordo abbiamo considerato la condizione non omogenea di Dirichlet $u = g$. Sono possibili altri tipi di condizioni al bordo, ad esempio:
+Al bordo abbiamo considerato la condizione non omogenea di Dirichlet $ \restr{u}{\partial \Omega} = g$. Sono possibili altri tipi di condizioni al bordo, ad esempio:
 \begin{itemize}
 	\item \textbf{Neumann} Condizione sulla derivata normale al bordo della funzione.
 	\item \textbf{Cauchy} Impone al bordo sia una condizione di Dirichlet che una di Neumann.
@@ -116,10 +149,10 @@ dove al bordo sono state supposte condizioni di Neumann omogenee, a significare 
 \qed
 \end{example}
 \hfill \\
-Gli esempi qui posti sono tutti riguardanti quantità incognite scalari, che è il caso che considereremo in seguito. Il ragionamento può essere esteso a sistemi di equazioni ellittiche (ovvero a grandezze vettoriali). Ad esempio \cite[Capitolo~11]{BS} mostra un'applicazione delle tecniche qui presentate al problema bidimensionale dell'elasticità planare.
+Gli esempi qui posti sono tutti riguardanti quantità incognite scalari, che è il caso che considereremo in seguito. Il ragionamento può essere esteso a sistemi di equazioni ellittiche (ovvero a grandezze vettoriali). Ad esempio \cite[Capitolo~11]{BS} mostra un'applicazione delle tecniche qui presentate al problema bidimensionale dell'elasticità planare. \\
 
 \section{Metodi Variazionali}
-Vogliamo dunque risolvere un problema del tipo \ref{Problema Di Dirichlet}. Esso in particolare per essere ben definito richiedere ad esempio che la soluzione $u$ sia almeno di classe $C^2(\Omega)$. Questo limita molto la capacità di modellizzazione per problemi fisici reali (ad esempio che presentano discontinuità). Inolte non è detto che sia possibile trovare una soluzione in forma chiusa del problema. Per provare ad ovviare a questi problemi proviamo a passare ad una formulazione equivalente detta formulazione variazionale o debole, che permette alla funzione $u$ di essere meno regolare di quanto previsto dal problema differenziale. I riferimenti principali per questa sezione sono \cite{Brezis} e \cite{Evans}.\\
+Vogliamo dunque risolvere un problema del tipo \ref{Problema Di Dirichlet}. Esso in particolare per essere ben definito richiedere ad esempio che la soluzione $u$ sia almeno di classe $C^2(\Omega) \cap C^0(\overline{\Omega})$. Questo limita molto la capacità di modellizzazione per problemi fisici reali (ad esempio che presentano discontinuità). Inolte non è detto che sia possibile trovare una soluzione in forma chiusa del problema. Per provare ad ovviare a questi problemi proviamo a passare ad una formulazione equivalente detta formulazione variazionale o debole, che permette alla funzione $u$ di essere meno regolare di quanto previsto dal problema differenziale. I riferimenti principali per questa sezione sono \cite{Brezis} e \cite{Evans}.\\
 Consideriamo inizialmente il seguente problema omogeneo:\\\\
 \index{Problema Di Dirichlet Omogeneo} \label{Problema Di Dirichlet Omogeneo}
 \begin{math}
@@ -146,14 +179,18 @@ Attraverso la definizione di derivata debole possiamo definire lo spazio di Sobo
 \begin{definition} [\textbf{$\mathbb{H}^{1}(\Omega)$}] \index{Spazio $\mathbb{H}^{1}$} \label{Spazio H1}
 \hfill \\
 \[ \mathbb{H}^{1}(\Omega) \quad = \quad \left \{ v \in \mathbb{L}^{2}(\Omega): \quad \nabla{v} \in \mathbb{L}^{2}(\Omega) \right \}	\]
-dove il gradiente è inteso come derivazione debole analogamente a come definito sopra. Questo spazio risulta essere uno spazio di Hilbert con prodotto scalare:
+dove il gradiente è inteso nel senso della derivazione debole analogamente a come definito sopra. Questo spazio risulta essere uno spazio di Hilbert con prodotto scalare:
 \[ < v, v' >_{\mathbb{H}^{1}(\Omega)} \quad = \quad < v, v' >_{\mathbb{L}^{2}(\Omega)} + < \nabla{v}, \nabla{v}' >_{\mathbb{L}^{1}(\Omega)}\]
 ovvero con norma indotta dal prodotto scalare:
-\[ \mid \mid v \mid \mid _{\mathbb{H}^{1}(\Omega)}\quad = \quad \mid \mid v \mid \mid _{\mathbb{L}^{2}(\Omega)} + \mid \mid \nabla{v} \mid \mid _{\mathbb{L}^{2}(\Omega)} \]
+\[ \norm{v}_{\mathbb{H}^{1}(\Omega)}\quad = \quad \norm{v}_{\mathbb{L}^{2}(\Omega)} + \norm{\nabla{v}}_{\mathbb{L}^{2}(\Omega)} \]
+inoltre possiamo definire su $\mathbb{H}^{1}$ la seminorma
+\[ \abs{v}_{\mathbb{H}^{1}(\Omega)}\quad = \quad  \norm{\nabla{v}}_{\mathbb{L}^{2}(\Omega)} \]
+che per il lemma di Poincarè è equivalente alla norma precedente.
 \qed
 \end{definition}
+\hfill \\
 Questo spazio è dunque l'insieme delle funzioni di $L^{2}(\Omega)$ con derivate deboli prime (espresse tramite il gradiente) anch'esse in $L^{2}(\Omega)$. In questo spazio (o in un suo sottospazio) andremo a cercare le soluzioni deboli della formulazione variazionale. \\
-L'idea dietro alla formulazione debole è che il problema differenziale è scritto localmente. Vogliamo però scriverlo in forma globale, in modo da poter considerare funzioni meno regolari, attraverso il concetto di derivata debole.\\
+L'idea dietro alla formulazione debole è che il problema differenziale, in quanto scritto localmente, limita troppo la regolaritò della soluzione e del dato al bordo. Vogliamo perciò scriverlo in forma globale, in modo da poter considerare funzioni meno regolari, attraverso il concetto di derivata debole.
 \begin{theorem} [Problema Ellitico In Forma Variazionale] \index{Problema Ellittico Debole} \label{Problema Ellittico Debole}
 \hfill \\
 Il problema ellittico \ref{Problema Di Dirichlet Omogeneo} può essere riscritto in forma variazionale nel seguente modo:\\
@@ -191,7 +228,9 @@ da cui risulta che
 \end{itemize}
 \qed
 \hfill \\
-allo stesso modo si può procedere per il caso non omogeneo \ref{Problema Di Dirichlet}, dove però al bordo l'integrale non è più nullo, ma va considerato con $u = g$ a livello di tracce.
+allo stesso modo si può procedere per il caso non omogeneo \ref{Problema Di Dirichlet}, dove però al bordo l'integrale non è più nullo, ma va considerato con la restrizione al bordo $\restr{u}{\partial \Omega} = g$ \footnote{Dato che $u \in \mathbb{H}^{1}(\Omega)$, non ha senso in generale l'uguaglianza a livello puntuale. Per ovviare al problema si considera la restrizione nel senso delle funzioni di traccia}. Si può dimostrare che nel caso non omogeneo si ottiene la forma debole \label{Problema Ellittico Debole Non Omogeneo} \index{Problema Ellittico Debole Non Omogeneo}:
+\[ \int_{\Omega}{c \, \nabla u \nabla v \; dx} \; + \; \int_{\Omega}{(\beta \cdot \nabla u) \, v \; dx} \; + \; \int_{\Omega}{\alpha \, u \, v \; dx} \quad = \quad \int_{\Omega}{f \, v \; dx} \; + \; \int_{\partial\Omega}{g \, v \; dx}\]
+
 \hfill \\
 Il problema in forma debole \ref{Problema Ellittico Debole}, può essere espresso in forma astratta:
 \begin{definition} [Problema Astratto] \index{Problema Astratto} \label{Problema Astratto}
@@ -216,17 +255,16 @@ Nel nostro caso particolare \ref{Problema Ellittico Debole}  il problema astratt
 \qed
 \end{definition}
 Il lemma di Lax-Milgram fornisce un risultato di esistenza e unicità della soluzione (debole) al problema astratto, che coincide dunque con l'esistenza e unicità della soluzione di \ref{Problema Ellittico Debole} e di \ref{Problema Di Dirichlet}:
-\begin{theorem} [Lax-Milgram - 1954] \index{Lemma di Lax-Milgram} \label{Lemma di Lax-Milgram}
+\begin{theorem} [Lax-Milgram - 1954] \index{Lemma di Lax-Milgram} \label{Lemma di Lax-Milgram} \footnote{Questo lemma è stato in seguito generalizzato da Babuska \cite{babuska1971BLM}, in modo da considerare due spazi di appartenzenza diversi per $u$ e per $v$ e indebolendo la richiesta sulla coercività (richiedendo la coercività debole).}
 \hfill \\
 Esiste ed è unica la soluzione debole $u \in \mathbb{V}$ di Hilbert per il problema astratto \ref{Problema Astratto} se:
 \begin{itemize}
-	\item $a(u,v)$ è continua: $\qquad a(u,v) \ \leq \ M \mid \mid u \mid \mid_{\mathbb{V}} \, \mid \mid v \mid \mid_{\mathbb{V}}$
-	\item $a(u,v)$ è coerciva: $\qquad \ a(v,v) \ \geq \ c \mid \mid v \mid  \mid_{\mathbb{V}}^{2}$
-	\item $F(v)$ è continua: $\qquad \quad F(v) \ \leq \ C \mid \mid v \mid \mid_{\mathbb{V}}$
+	\item $a(u,v)$ è continua: $\qquad a(u,v) \ \leq \ M \norm{u}_{\mathbb{V}} \, \norm{v}_{\mathbb{V}}$
+	\item $a(u,v)$ è coerciva: $\qquad \ a(v,v) \ \geq \ c \norm{v}_{\mathbb{V}}^{2}$
+	\item $F(v)$ è continua: $\qquad \quad F(v) \ \leq \ C \norm{v}_{\mathbb{V}}$
 \end{itemize}
-
 \end{theorem}
-Questo lemma è stato in seguito generalizzato da Babuska \cite{babuska1971BLM}, in modo da considerare due spazi di appartenzenza diversi per $u$ e per $v$ e indebolendo la richiesta sulla coercività (richiedendo la coercività debole).\\
+\hfill \\
 Nel caso in cui $a(u,v)$ sia anche simmetrica, tale forma è un prodotto scalare, e il lemma di Lax-Milgram deriva direttamente dal teorema di rappresentazione di Riesz. \\
 Nel caso particolare di \ref{Problema Ellittico Astratto}, si può dimostrare che affinchè valgano le condizioni delle ipotesi del lemma di Lax-Milgram \ref{Lemma di Lax-Milgram}, le funzioni caratterizzanti il problema devono rispettare le seguenti:
 \begin{itemize}
@@ -234,12 +272,11 @@ Nel caso particolare di \ref{Problema Ellittico Astratto}, si può dimostrare ch
 	\item $\alpha(\underline{x}) \in L^{2}(\Omega), \ \beta(\underline{x}) \in C^{1}(\Omega) \qquad \alpha \, - \, div \beta \ = \ 0$
 	\item $f(\underline{x}) \in L^{2}(\Omega)$
 \end{itemize}
-{ \color{red} MIGLIORARE DESCRIZIONE CASO NON OMOGENE0\\}
-{ \color{blue} FINE SEZIONE\\}
+
 
 \section{Metodo Galerkin}
 Abbiamo visto che il problema astratto \ref{Problema Ellittico Astratto} ammette soluzione unica se la forma bilineare $a(u,v)$ è continua e coerciva, e se la forma lineare $F(v)$ è continua per il lemma di Lax-Milgram \ref{Lemma di Lax-Milgram}. Non esiste però un metodo generale per trovare la soluzione esatta al problema astratto in forma chiusa su un qualunque dominio $\Omega$ (soluzione che non è detto che sia formulabile in forma chiusa). Per risolvere il problema dobbiamo quindi tentare di stimare la soluzione esatta con una soluzione approssimata, valutandone poi l'errore di approssimazione. La principale bibliografia per questa sezione è formata da \cite{BS} e da \cite{Ciarlet} e \cite{Q}.\\
-Uno dei metodi principali che consente questo processo è quello di Galerkin \footnote{Un altro metodo rilevante, ma più semplice è quello delle differenze finite, in cui si approssimano direttamente le derivate sui nodi per riformulare l'equazione in modo approssimato}:
+Uno dei metodi principali che consente questo processo è quello di Galerkin \footnote{In particolare presentiamo il cosiddetto metodo di Bubnov-Galerkin, in cui gli spazi delle funzioni test e delle soluzioni coincidono. Il caso più generale che considera spazi funzionali differenti tra funzioni test e soluzioni è dato dal metodo di Petrov-Galerkin.}:
 \begin{definition} [Metodo Galerkin] \index{Metodo Galerkin} \label{Metodo Galerkin}
 \hfill \\
 Il metoodo Galerkin consiste nell'approssimare lo spazio continuo $\mathbb{V}$ con una famiglia di spazi $\mathbb{V}_{h}$, dipendenti da un parametro positivo $h$, tali che:
@@ -299,17 +336,16 @@ dove abbiamo definito la matrice di stiffness $Kh$ \index{Matrice Di Stiffness} 
 \end{definition}
 \hfill \\
 Nel caso particolare del problema ellittico astratto \ref{Problema Ellittico Astratto} abbiamo la matrice di stiffness \index{Matrice Di Stiffness Problema Ellittico} \label{Matrice Di Stiffness Problema Ellittico}
-\[ (K_{h})_{i,j} \ = \ a(u,v) \ = \ \int_{\Omega}{c \, \nabla \phi_{j} \nabla \phi_{i} \; dx} \; + \; \int_{\Omega}{(\beta \cdot \nabla \phi_{j}) \, \phi_{i} \; dx} \; + \; \int_{\Omega}{\alpha \, \phi_{j} \, \phi_{i} \; dx} \]
+\[ (K_{h})_{i,j} \ = \ a \, \left( \phi_{j} \ , \ \phi_{i} \right) \ = \ \int_{\Omega}{c \, \nabla \phi_{j} \nabla \phi_{i} \; dx} \; + \; \int_{\Omega}{(\beta \cdot \nabla \phi_{j}) \, \phi_{i} \; dx} \; + \; \int_{\Omega}{\alpha \, \phi_{j} \, \phi_{i} \; dx} \]
 e il vettore termine noto:
 \[ (\underline{f})_{i} \ = \ F \ \left(  \phi_{i} \right) \ = \ \int_{\Omega}{f \, \phi_{i} \; dx} \]
-{ \color{red} CONTROLLARE LA CORRETTEZZA DEGLI INDICI RISPETTO A QUANTO FATTO A LEZIONE\\}
-{ \color{blue} FINE SEZIONE\\}
 
 
-\section{Approssimazione Con Elementi Finiti}
+
+\section{Approssimazione Con Elementi Finiti (Lagrangiani)}
 Il metodo di Galerkin fornisce l'idea di approssimare il problema continuo con quello discreto, ma non da vincoli su come fare questa approssimazione. Gli elementi finiti sono un metoodo di Galerkin in cui l'approssimazione viene fatta considerando polinomi su elementi di una partizione (poligonale) del dominio. I testi di riferimento sono \cite{BS} e da \cite{Ciarlet} e \cite{Q}. In particolare lavoriamo in questa sezione considerando per semplicità un dominio $\Omega \in \Re^{2}$, con l'ovvia estensione al caso in più di due dimensioni.
 Il fondamento del metodo agli elementi finiti è di costruire lo spazio discreto $\mathbb{V}_h$ tramite funzioni polinomiali da considerare sugli elementi di una mesh rappresentante $\Omega$. \\
-L'idea di costruire una mesh per il dominio $\Omega$ si basa sul concetto topologico di complesso simpliciale euclideo \cite[Chapter~2]{FerrarioSimpl}, che nel caso particolare  bidimensionale permette di considerare la scomposizione di un dominio poligonale in un numero finito di triangoli (e quindi fare una triangolazione del dominio) seguendo le due seguenti proprietà:
+L'idea di costruire una mesh per il dominio $\Omega$ si basa sul concetto topologico di complesso simpliciale euclideo \cite[Capitolo~2]{FerrarioSimpl}, che nel caso particolare  bidimensionale permette di considerare la scomposizione di un dominio poligonale in un numero finito di triangoli (e quindi fare una triangolazione del dominio) seguendo le due seguenti proprietà:\index{Triangolazione} \label{Triangolazione}
 \begin{itemize}
 	\item Un vertice di un triangolo $\mathbb{T}_{i}$ può essere un punto di un qualsiasi altro triangolo $\mathbb{T}_{j}$ solo se è un vertice dell'altro triangolo. Questo impedisce che un triangolo abbia un verice nel lato di un'altro (ovvero impone la conformità dei triangoli).
 	\item Se l'intersezione degli interni di due triangoli non è vuota, allora i due triangoli devono coincidere. Questa proprietà serve ad escludere triangoli uno interno all'altro o incastonati.
@@ -358,7 +394,73 @@ In particolare notiamo che il supporto della funzione $\phi_{i}$ è formata dai 
 Usando questa base, la risultante matrice di stiffness $K_{h}$ oltre ad essere definita positiva \footnote{Fatto che vale per ogni base}, risulta essere anche una matrice sparsa \footnote{Che invece vale in particolare per questa base ma non in generale}. Ciò permette da un lato di ridurre le dimensioni in memoria della matrice e dall'altro di usare metodi appositi per la risoluzione di sistemi lineari con matrice associata sparsa, quali il gradiente coniugato o l'uso di precondizionatori \cite{SaadSparse}.\\
 Definiamo dunque il problema astratto discreto agli elemeti finiti come al caso particolare del problema astratto discreto in forma matriciale \ref{Problema Astratto Discreto In Forma Matriciale} dove consideriamo come basi le basi di Lagrange \ref{Base di Lagrange} e gli spazi cosi come definiti nel caso degli elementi finiti polinomiali \ref{Elementi Finiti Polinomiali}. In modo analogo definiamo il problema agli elementi finiti che approssima il problema ellittico in forma debole \ref{Problema Ellittico Debole}.
 
-\chapter{Calcolo Esplicito}
+\section{Stime Teoriche Errori}
+Raccogliamo in questa sezione varie stime per l'errore compiuto nell'approssimazione agli elementi finiti per il problema ellittico \ref{Problema Ellittico Debole}. Inanzitutto ricordiamo il lemma di Cea \ref{Lemma Di Cea} per la stima dell'errore compiuto da un generico metodo Galerkin \ref{Metodo Galerkin} (e quindi valido per problemi più generali del nostro problema ellittico):
+\[ \mid \mid u \, - \, u_{h} \mid \mid_{\mathbb{V}(\Omega)} \ \leq \ \frac{M}{c} \ Inf_{v_{h} \in \mathbb{V}_{h}} \mid \mid u \, - \, v_{h} \mid \mid_{\mathbb{V}(\Omega)} \]
+dove $M$ è la costante della continuità e $c$ quella della coercività di $a(\cdot,\cdot)$. Vogliamo però dare delle stime dell'errore compiuto dall'approssimazione agli elementi finiti in varie norme. In particolare vogliamo stimare l'errore $u - u_{h}$ in norma $L^{2}(\Omega)$
+\[ \mid \mid u \, - \, u_{h} \mid \mid_{L^{2}(\Omega)}^{2} \ = \ \int_{\Omega} { (u \, - \, u_{h})^{2} dx}\]
+e in norma $\mathbb{H}^{1}$:
+\[ \mid \mid u \, - \, u_{h} \mid \mid_{\mathbb{H}^{1}(\Omega)}^{2} \ = \ \mid \mid u \, - \, u_{h} \mid \mid_{L^{2}(\Omega)}^{2} \ + \ \mid u \, - \, u_{h} \mid_{\mathbb{H}^{1}(\Omega)}^{2} \ = \ \int_{\Omega} { (u \, - \, u_{h})^{2} dx} \ + \ \int_{\Omega} { \mid \nabla(u \, - \, u_{h}) \mid^{2} dx}\]
+\hfill \\
+\subsection{Errore $\mathbb{H}^{1}$}
+Iniziamo dall'errore in norma $\mathbb{H}^{1}$. Vale la seguente stima:
+\begin{theorem} [Stima Errore $\mathbb{H}^{1}(\Omega)$] \label{Stima Errore H1} \index{Stima Errore $\mathbb{H}^{1}(\Omega)$}
+\[ \mid \mid u \, - \, u_{h} \mid \mid_{\mathbb{H}^{1}(\Omega)} \ \leq \ C \, h^{k} \, \mid u \mid_{\mathbb{H}^{k+1}(\Omega)} \]
+\end{theorem}
+\hfill \\
+Per dimostrare questa stima si usa il seguente lemma:
+\begin{lemma}
+Sia $v \in \mathbb{V}$ e sia $T \in \mathbb{T}$ un qualunque elemento della triangolazione del dominio $\Omega$. Allora se $\Pi$ è un proiettore da $\mathbb{V}$ a $\mathbb{V}_{h} \subset \mathbb{V}$, si ha la seguente stima:
+\[ \mid \mid v \, - \, \Pi v_{h} \mid \mid_{m,T} \ \leq \ C \frac{h_{T}^{k+1}}{\rho_{T}^{m}} \mid v \mid_{k+1,T}  \]
+dove
+\begin{itemize}
+	\item $ 0 \, \leq \, m \, \leq \, k+1$.
+	\item $h_{T}$ è il diametro del triangolo $T$.
+	\item $\rho_{T}$ è il diametro del cerchio inscritto al triangolo $T$.
+\end{itemize}
+\end{lemma}
+\hfill \\
+Possiamo ora dimostrare il teorema:\\
+\hfill \\
+\emph{Dimostrazione Teorema \ref{Stima Errore H1}}\\
+Applichiamo il lemma con $m = 1$ e $v = u$:
+\[ \mid \mid u \, - \, \Pi u_{h} \mid \mid_{\mathbb{H}^{1}(T)} \ \leq \ C \frac{h_{T}^{k+1}}{\rho_{T}} \mid u \mid_{\mathbb{H}^{k+1}(T)} \]
+supponiamo che la mesh sia shape regular, ovvero che $h_{T} \approx \rho_{T}$:
+\[ \mid \mid u \, - \, \Pi u_{h} \mid \mid_{\mathbb{H}^{1}(T)} \ \leq \ C h_{T}^{k} \mid u \mid_{\mathbb{H}^{k+1}(T)}  \]
+inolte per le proprietà dei proiettori abbiamo $ \Pi u_{h} = u_{h} \forall \, u_{h} \in \mathbb{V}_{h}$, da cui
+\[ \mid \mid u \, - \, u_{h} \mid \mid_{\mathbb{H}^{1}(T)} \ \leq \ C h_{T}^{k} \mid u \mid_{\mathbb{H}^{k+1}(T)}  \]
+consideriamo ora l'errore in norma $\mathbb{H}^1(\Omega)$ e spezziamolo sui singoli triangoli della mesh (supponendo di assimilare tutte le costanti):
+\[ \mid \mid u \, - \, u_{h} \mid \mid_{\mathbb{H}^{1}(\Omega)}^{2} \ \leq \ C \sum_{T \in \mathbb{T}} \mid \mid u \, - \, u_{h} \mid \mid_{\mathbb{H}^{1}(T)}^2 \]
+applichiamo ora la disuguaglianza ottenuta dal lemma:
+\[ \mid \mid u \, - \, u_{h} \mid \mid_{\mathbb{H}^{1}(\Omega)}^{2} \ \leq \ C \sum_{T \in \mathbb{T}} (h_{T}^{k} \mid u \mid_{\mathbb{H}^{k+1}(T)})^2 \]
+sia ora $h$ il massimo tra tutti gli $h_{T}$, allora sempre assimilando le costanti otteniamo
+\[ \mid \mid u \, - \, u_{h} \mid \mid_{\mathbb{H}^{1}(\Omega)}^{2} \ \leq \ C h^{2k} \mid u \mid_{\mathbb{H}^{k+1}(\Omega)}^2 \]
+da cui prendendo la radice quadrata di ambo i membri otteniamo il risultato voluto:
+\[ \mid \mid u \, - \, u_{h} \mid \mid_{\mathbb{H}^{1}(\Omega)} \ \leq \ C h^{k} \mid u \mid_{\mathbb{H}^{k+1}(\Omega)} \]
+\qed
+\hfill
+
+
+\subsection{Errore $L^{2}$}
+Passiamo alla norma $L^{2}(\Omega)$. Per darne una stima si usa il cosiddetto argomento di dualità di Aubin-Nitzche \footnote{Tecniche di dualità vengono usate per trattare agevolmente problemi vincolati \cite{BBFmixed}}. Definiamo quindi il problema duale:
+\begin{definition} [Problema Duale] \label{Problema Duale} \index{Problema Duale}
+\hfill \\
+Dato il problema primale (ovvero il problema astratto \ref{Problema Astratto}):
+\[ u \in  \mathbb{V} : \quad a(u,v) = F(v) \qquad \qquad \forall v \, \in \mathbb{V} \]
+definiamo l'associato problema duale come
+\[ u \in  \mathbb{V} : \quad a(v,u) = F(u) \qquad \qquad \forall v \, \in \mathbb{V} \]
+\end{definition} 
+\hfill \\
+Notiamo che il problema duale coincide con quello primale se la forma bilineare $\alpha (\dot , \dot)$ è simmetrica. Inoltre se il problema primale ammette soluzione unica (per Lax-Milgram \ref{Lemma di Lax-Milgram}), lo stesso vale per il problema duale. Tramite il problema duale (considerando l'errore come temine noto del problema duale) è possibile dimostrare la seguente stima per l'errore in $L^{2}(\Omega)$:
+\begin{theorem} [Stima Errore $L^2(\Omega)$] \label{Stima Errore L2} \index{Stima Errore $L^2{\Omega}$}
+\[ \mid \mid u \, - \, u_{h} \mid \mid_{L^{2}(\Omega)}^{2} \ \leq \ C h^{k+1} \mid u \mid_{\mathbb{H}^{k+1}(\Omega)} \]
+\end{theorem}
+
+
+
+\chapter{Calcolo Con Elemento Di Riferimento}
+
+\section{Introduzione}
 In questo capitolo mostriamo come fare esplicitamente il calcolo della soluzione approssimata tramite gli elementi finiti. Quello che andiamo a risolvere è dunque il problema \ref{Problema Astratto Discreto In Forma Matriciale} rappresentato dal seguente sistema lineare
 \[ K_{h} \, \underline{u} \; = \; \underline{f} \]
 che scritto esplicitamente rispetto alla definizione del problema ellittico in forma astratta \ref{Problema Ellittico Astratto} porta a dover calcolare
@@ -370,52 +472,445 @@ Allo stesso modo facciamo per il termine noto:
 \[ (f)_{i} \quad = \quad \sum_{T \in \mathbb{T}}{(f^T)_{i}} \quad = \quad \sum_{T \in \mathbb{T}} \int_{T}{f \, \phi_{i} \; dx}\]
 Consideriamo dunque $\forall \ T \in \mathbb{T}$ il problema:
 \[ \int_{T}{c \, \nabla \phi_{j} \nabla \phi_{i} \; dx} \; + \; \int_{T}{(\beta \cdot \nabla \phi_{j}) \, \phi_{i} \; dx} \; + \; \int_{T}{\alpha \, \phi_{j} \, \phi_{i} \; dx} \quad = \quad \int_{T}{f \, \phi_{i} \; dx}\]
-Affrontiamo subito il problema delle condizioni al bordo. Nei vertici di bordo sappiamo già il valore della soluzione $u$, che corrisponde al valore del dato al bordo $g$ calcolato nel vertice.
+Affrontiamo subito il problema delle condizioni al bordo. Nei vertici di bordo sappiamo già il valore della soluzione $u$, che corrisponde al valore del dato al bordo $g$ calcolato nel vertice. Sfruttando l'idea insita nella forma del problema debole non omogeneo \ref{Problema Ellittico Debole Non Omogeneo} in cui abbiamo il termine di bordo associato al termine noto, possiamo semplicemente restringere la matrice $K_{h}$ e i vettori $\underline{u}$ e $\underline{f}$ ai nodi interni, aggiungendo poi in seguito i valori sui nodi di bordo, dove consideriamo per i nodi $x_{i}$ di bordo:
+\[ (\underline{u})_{i} = g(x_{i}) \]
+ovvero consideriamo i valori del dato al bordo $g$ nei singoli nodi.\\
+Definiamo dunque la matrice $A_{h}$ di dimensioni $NL \times NL$ e il vettore $\underline{b} \in R^{NL}$, con $NL$ numero di nodi liberi (ovvero non di bordo), come:
+\[ (A_{h})_{i,j} = (K_{h})_{i,j} \qquad \qquad (\underline{b})_{i} = (\underline{f})_{i}\]
 
+\section{Elemento di riferimento}
+Dato che i triangoli della mesh hanno la sola restrizione di verificare le proprietà \ref{Triangolazione} date per la triangolazione \footnote{Nelle analisi della convergenza si suppone di lavorare con mesh \emph{Shape Regular}, ovvero si suppone che i triangoli non abbiano un diametro molto maggiore del diametro del cerhio inscritto in essi, ovvero non si accettano triangoli degeneri con angoli molto piccoli (Ad esempio a livello pratico si è visto che un limite di 20 gradi è sufficiente per ottenere una buona qualità delle mesh).}, impostare un calcolo automatico su ogni triangolo potrebbe essere difficile da gestire (ancor di più se si passa a tre o più dimensioni). E' dunque comodo trasportare i calcoli su un elemento triangolare di riferimento $\hat{T}$ , definito come il triangolo rettangolo isoscele con il vertice sottostante all'angolo rettangolo nell'origine del sistema di riferimento e gli altri due lati (presi unitari) disposti sugli assi. Questo triangolo di riferimento avrà area $\mid \hat{T} \mid \ = \ \frac{1}{2}$.
 
+\begin{center}
+\begin{tikzpicture}[thick]
+\draw[thick,->] (0,0) -- (7,0) node[anchor=north west] {X};
+\draw[thick,->] (0,0) -- (0,7) node[anchor=south east] {Y};
 
-Dato che il calcolo diretto viene abbastanza complicato in più di una dimensione, usiamo l'idea di ricondurci ad un elemento di riferimento.
+% A = (0,0)
+\coordinate (A) at (0,0);
+\node [label={[xshift=0cm, yshift=-1cm]$\hat{A} = (0,0)$}] {}; % A = (0.0) Label
 
+% B = (6,0)
+\coordinate (B) at (6,0);
+\node [label={[xshift=6cm, yshift=-1cm]$\hat{B} = (1,0)$}] {};
 
-\chapter{Stime Sugli Errori}
+% C = (0,6)
+\coordinate (C) at (0,6);
+\node [label={[xshift=-1cm, yshift=5.5cm]$\hat{C} = (0,1)$}] {};
 
-\section{Stime Teoriche Errori}
-Raccogliamo in questa sezione varie stime per l'errore compiuto nell'approssimazione agli elementi finiti. Inanzitutto ricordiamo il lemma di Cea \ref{Lemma Di Cea} per la stima dell'errore compiuto dal metodo Galerkin \ref{Metodo Galerkin}:
-\[ \mid \mid \ u \, - \, u_{h} \ \mid \mid_{\mathbb{V}(\Omega)} \quad \leq \quad \frac{M}{c} \ Inf_{v_{h} \in \mathbb{V}_{h}} \mid \mid \ u \, - \, v_{h} \ \mid \mid_{\mathbb{V}(\Omega)} \]
-dove $M$ è la costante della continuità e $c$ quella della coercività di $a(\cdot,\cdot)$. Vogliamo però dare delle stime dell'errore compiuto dall'approssimazione agli elementi finiti in varie norme.
+% \hat{T} Label Node
+\node [label={[xshift=1.5cm, yshift=2cm]$\hat{T}$}] {};
 
-\section{Calcolo Errore $\mathbb{L}^{2}$}
+\draw (A)--(B)--(C)--cycle;
 
-\section{Calcolo Errore $\mathbb{H}^{1}$}
+\tkzMarkRightAngle[size=0.8,opacity=.4](B,A,C)% square angle here
+\tkzLabelAngle[pos = 0.35](B,A,C){$\gamma$}
 
+\tkzMarkAngle[size=0.8cm, opacity=.4](C,B,A)
+\tkzLabelAngle[pos = 0.6](C,B,A){$\alpha$}
 
+\tkzMarkAngle[size=0.8cm, opacity=.4](A,C,B)
+\tkzLabelAngle[pos = 0.5](A,C,B){$\alpha$}
 
-{ \color{red} DA AGGIUNGERE STIME ERRORI ELEMENTI FINITI\\}
-{ \color{blue} FINE SEZIONE\\}
+\end{tikzpicture}
+\end{center}
 
-\chapter{Codice Matlab}
-\lstdefinestyle{matlab}{
-  belowcaptionskip=1\baselineskip,
-  breaklines=true,
-  frame=L,
-  %xleftmargin=\parindent,
-  %xleftmargin=\hangindent,
-  language=matlab,
-  showstringspaces=false,
-  basicstyle=\footnotesize\ttfamily,
-  keywordstyle=\bfseries\color{green!40!black},
-  commentstyle=\itshape\color{purple!40!black},
-  identifierstyle=\color{blue},
-  stringstyle=\color{orange},
-}
+\hfill \\
+Per passare dall'elemento di riferimento $\hat{T}$ ad un qualunque altro elemento $T \in \mathbb{T}$, consideriamo una funzione affine e invertibile $F \, : \ \hat{T} \  \rightarrow \ T$, definita come:
+\[ F(\hat{\underline{x}}) \ = \ B \hat{\underline{x}} + b \ = \ \underline{x} \qquad \qquad \underline{x} = (x,y) \quad \hat{\underline{x}} = (\hat{x},\hat{y})\]
+ovvero
+\[
+F(\hat{\underline{x}}) \ = \ \left[ \begin{array}{ccc}
+\alpha_{1} & \beta_{1} \\
+\alpha_{2} & \beta_{2} \end{array} \right] \left( \begin{array}{ccc}
+\hat{x} \\
+\hat{y} \end{array} \right) +  \left( \begin{array}{ccc}
+\gamma_{1} \\
+\gamma_{2} \end{array} \right)  \ = \ \left[ \begin{array}{ccc}
+\alpha_{1} \hat{x} \ + \ \beta_{1} \hat{y} \ + \ \gamma_{1} \\
+\alpha_{2} \hat{x} \ + \ \beta_{2} \hat{y} \ + \ \gamma_{2} \end{array} \right] \ = \ \left( \begin{array}{ccc}
+x \\
+y \end{array} \right) 
+\]
+dove per convenzione consideriamo le quantità con il cappuccio quelle appartenenti al triangolo di riferimento $\hat{T}$ e quella senza come appartenenti al triangolo generico $T$. La situazione è rappresentata dal seguente diagramma:
 
-Riportiamo di seguito il codice Matlab in cui si presenta un'implementazione del metodo agli elementi finiti per il problema ellittico \ref{Problema Di Dirichlet} nel caso particolare di un dominio $\Omega \in \Re^{2}$. Riportiamo solo il programma principale \emph{fem2.m}, mentre le altre funzioni di supporto utilizzate (come ad esempio per la generazione della mesh, per le formule di quadratura o per i grafici), possono essere trovate online al sito \url{https://github.com/UniversityProjects/FEM1/tree/master/Project}
-%\lstinputlisting[language=Matlab]{fem2.m}
-\lstinputlisting[caption=Elementi Finiti Di Ordine Due Per Il Problema Ellittico, style=matlab]{fem2.m}
+\begin{center}
+\begin{tikzpicture}[thick]
+
+% Elemento Di Riferimento
+\coordinate (A) at (0,0);
+\node [label={[xshift=0cm, yshift=-1cm]$(0,0)$}] {}; % A = (0.0) Label
+\coordinate (B) at (3,0);
+\node [label={[xshift=3cm, yshift=-1cm]$(1,0)$}] {};
+\coordinate (C) at (0,3);
+\node [label={[xshift=0cm, yshift=3cm]$(0,1)$}] {};
+\node [label={[xshift=1cm, yshift=0.6cm]$\hat{T}$}] {};
+\draw (A)--(B)--(C)--cycle;
+
+% Funzione F
+\coordinate (Fa) at (3.2,2);
+\coordinate (Fb) at (7.2,2);
+\node [label={[xshift=5cm, yshift=2cm]$F$}] {};
+\draw [->,>=stealth] (Fa)--(Fb);
+
+% Funzione F
+\coordinate (Fia) at (3.2,0.5);
+\coordinate (Fib) at (7.2,0.5);
+\node [label={[xshift=5cm, yshift=0.5cm]$F^{-1}$}] {};
+\draw [->,>=stealth] (Fib)--(Fia);
+
+% Elemento Generico
+\coordinate (1) at (10,0);
+\node [label={[xshift=10cm, yshift=-1cm]$(x_{1}, y_{1})$}] {}; % A = (0.0) Label
+\coordinate (2) at (14,3);
+\node [label={[xshift=15cm, yshift=3cm]$(x_{2}, y_{2})$}] {};
+\coordinate (3) at (8,2);
+\node [label={[xshift=8cm, yshift=2cm]$(x_{3}, y_{3})$}] {};
+\node [label={[xshift=10.3cm, yshift=1cm]$T$}] {};
+\draw (1)--(2)--(3)--cycle;
+
+\end{tikzpicture}
+\end{center}
+
+\hfill \\
+Imponiamo inoltre la condizione secondo cui i vertici vengono mappati nei vertici, ovvero:
+\[ F \, ( \, 0 \, , \, 0 \, ) \ = \ ( \, x_{1} \, , \, y_{1} \, ) \qquad \qquad F \, ( \, 1 \, , \, 0 \, ) \ = \ ( \, x_{2} \, , \, y_{2} \, ) \qquad \qquad F \, ( \, 0 \, , \, 1 \, ) \ = \ ( \, x_{3} \, , \, y_{3} \, ) \]
+che permette di calcolare i coefficienti presenti nella definizione della funzione $F$:
+\[
+F(\hat{x}, \hat{y} ) \ = \ \left[ \begin{array}{ccc}
+\alpha_{1} & \beta_{1} \\
+\alpha_{2} & \beta_{2} \end{array} \right] \left( \begin{array}{ccc}
+\hat{x} \\
+\hat{y} \end{array} \right) \ + \ \left( \begin{array}{ccc}
+\gamma_{1} \\
+\gamma_{2} \end{array} \right) \ = \ \left[ \begin{array}{ccc}
+x_{2} - x_{1} & x_{3} - x_{1} \\
+y_{2} - y_{1} & y_{3} - y_{1} \end{array} \right] \left( \begin{array}{ccc}
+\hat{x} \\
+\hat{y} \end{array} \right) \ + \ \left( \begin{array}{ccc}
+x_{1} \\
+y_{1} \end{array} \right) \ = \ \left( \begin{array}{ccc}
+x \\
+y \end{array} \right) 
+\]
+notiamo che la matrice altro non è che la matrice Jacobiana di $F$ (essendo affine), da cui possiamo riscrivere $F$ come:
+\[ F \, ( \, \hat{x} \, , \, \hat{y} \, ) \ = \mathbb{J}_{f} \, \underline{\hat{x}} \ + \ \underline{b} \]
+Da questa relazione possiamo calcolare in modo geometrico il determinante della matrice Jacobiana legandolo all'area $\mid \, T \, \mid$ del triangolo (in quanto la trasformazione è affine):
+\[ 2 \mid \, T \, \mid \ = \ 2 \int_{T}{1 \, dx} \ = \ 2 \int_{\hat{T}}{det \mathbb{J}_{f} \, d\hat{x}} \ = \ 2 det \mathbb{J}_{f} \int_{\hat{T}}{1 \, d\hat{x}} \ = \ 2 \, det \mathbb{J}_{f} \mid \, \hat{T} \, \mid \ = \ 2 \,  \frac{1}{2} det \mathbb{J}_{f} \ = \ det \mathbb{J}_{f} \]
+Attraverso la funzione $F$ e la sua inversa $F^{-1}$ possiamo poi trasportare funzioni a valori reali su $T$ a funzioni reali su $\hat{T}$, tramite l'operazione di composizione. In particolare consideriamo le funzioni di base. Dato che la funzione $F$ è affine, l'orientazione dei nodi rimane la stessa, e quindi abbiamo
+\[ F (\hat{N_{i}}) \ = \ N_{i} \qquad \qquad N_{i}: \text{ Nodo Su T} \qquad \hat{N_{i}}: \text{ Nodo Su } \hat{T}  \]
+da cui abbiamo che per le funzioni di base vale
+\[ ( \ \phi_{i} \circ F \ ) \, (\hat{N_{j}}) \ = \ \phi_{i} \ ( F(\hat{N_{j}})) \ = \ \phi_{i} \ (N_{j}) \ = \ \delta_{ij} = \hat{\phi_{i}}(\hat{N_{j}}) \]
+ovvero \index{Relazioni Basi Generiche e Di Riferimento} \label{Relazioni Basi Generiche e Di Riferimento} 
+\[ \phi_{i} \circ F \ = \ \hat{\phi}_{i} \qquad \qquad \hat{\phi}_{i} \circ F^{-1} \ = \ \phi_{i} \]
+una volta trovate le relazioni che legano le funzioni di base tra l'elemento generico $T$ e l'elemento di riferimento $\hat{T}$, possiamo trasportare tutti i calcoli sull'elemento di riferimento.
+
+\section{Termine Noto}
+Calcoliamo in questa sezione il termine noto del problema ellittico \ref{Matrice Di Stiffness Problema Ellittico} sul triangolo di riferimento, applicando le relazioni \ref{Relazioni Basi Generiche e Di Riferimento} trovate per le basi:
+\[ \int_{T}{f(x) \ \phi_{i}(x) \ dx} \ = \ \int_{\hat{T}}{f(x) \ \hat{\phi}_{i}(F^{-1}(x) \ dx} \]
+facciamo il cambio di variabili
+\[ x \ = \ F(\hat{x}) \qquad \qquad dx \ = \ detJ_{F}d\hat{x} \ = \ 2 \mid T \mid d\hat{x} \]
+da cui otteniamo
+\[ \int_{T}{f(x) \ \phi_{i}(x) \ dx} \ = \ 2 \mid T \mid \int_{\hat{T}}{f(F(\hat{x})) \ \hat{\phi}_{i}(\hat{x}) \ d \hat{x}} \]
+questa ultima formula non è in generale calcolabile esplicitamente. Dobbiamo dunque approssimarla con una formula di quadratura \cite[, Capitolo 8]{QSS}, del tipo: \label{Formula di Quadratura} \index{Formula di Quadratura}
+\[ \int_{\hat{T}}{\Psi d \hat{x}} \ \approx \ \sum_{q = 1}^{NQ} { \Psi \, (x_{q}^{Q} ) \cdot \, \hat{w}_{q} } \]
+dove abbiamo
+\begin{itemize}
+	\item Nodi di quadratura: $ \quad x_{q}^{Q} \ \in \ \left \{ x_{1}^{Q} \, , \, x_{2}^{Q} \, , \, . . . \, , \, x_{NQ}^{Q} \ \right \} \qquad \qquad x_{q}^{Q} \in \Re^{n}$
+	\item Pesi: $ \quad \hat{w}_{q} \ \in \ \left \{ \hat{w}_{1} \, , \, \hat{w}_{2} \, , \, . . . \, , \, \hat{w}_{NQ} \ \right \} \qquad \qquad \hat{w}_{q} \in \Re $
+\end{itemize}
+Nel nostro caso particolare abbiamo dunque
+\[ \int_{T}{f(x) \ \phi_{i}(x) \ dx} \ \approx \ 2 \mid T \mid \int_{\hat{T}}{f(F(\hat{x})) \ \hat{\phi}_{i}(\hat{x}) \ d \hat{x}} \ \approx \ 2 \mid T \mid \sum_{q = 1}^{NQ} { f \, (F(x_{q}^{Q} )) \cdot \hat{\phi}_{i} \, ( x_{q}^{Q} ) \cdot \, \hat{w}_{q} } \]
+
+\section{Termini Equazione Ellittica}
+Allo stesso modo del calcolo del termine noto, possiamo calcolare gli altri termini dell'equazione ellittica. In particolare il punto che necessità una discussione più approfondità è il calcolo del gradiente delle funzioni di base, presente sia nel termine di diffusione che in quello di avezione. Abbiamo visto che vale la relazione \ref{Relazioni Basi Generiche e Di Riferimento}:
+\[ \phi_{i}(x) \ = \ \hat{\phi}_{i}(F^{-1}(x)) \]
+da cui, ribattezzando $F^{-1}$ come $G = [G_{1} \, , G_{2}]'$, abbiamo che il gradiente di $\phi_{i}$ è riscrivibile in funzione del gradiente delle funzioni di base sull'elemento di riferimento:
+\[
+\nabla \phi_{i} \, (x,y) \ = \ \left[ \begin{array}{ccc}
+\frac{\partial G_{1}}{\partial x} & \frac{\partial G_{1}}{\partial x} \\
+& \\
+\frac{\partial G_{1}}{\partial x} & \frac{\partial G_{1}}{\partial x} \end{array} \right] \ \nabla \hat{\phi}_{i} \left( G_{1}(x,y), \, G_{2}(x,y)  \right)
+\]
+ovvero, dato che 
+\[ J_{G}^{T} \ = \ J_{F^{-1}}^{T} \ = \ J_{F}^{-T} \]
+allora possiamo scrivere infine
+\[
+\nabla \phi_{i} \, (x,y) \ = \ J_{F}^{-T} \nabla \hat{\phi}_{i} \left( G_{1}(x,y), \, G_{2}(x,y)  \right)
+\]
+Con questa relazione possiamo approssimare i vari termini del problema ellittico su ogni elemento della triangolazione:
+\begin{itemize}
+\item Termine di Diffusione
+\[ \int_{T}{c \, \nabla \phi_{j} \nabla \phi_{i} \; dx} \ \approx \ 2 \mid T \mid \sum_{q = 1}^{NQ} { c \, (F(x_{q}^{Q} )) \, \cdot \, J_{F}^{-T} \nabla  \hat{\phi}_{j} \, ( x_{q}^{Q} ) \, \cdot \, J_{F}^{-T} \nabla \hat{\phi}_{i} \, ( x_{q}^{Q} ) \cdot \, \hat{w}_{q} } \]
+\item Termine di Avezione
+\[ \int_{T}{(\beta \cdot \nabla \phi_{j}) \, \phi_{i} \; dx} \ \approx \ 2 \mid T \mid \sum_{q = 1}^{NQ} { \beta \, (F(x_{q}^{Q} )) \, \cdot \, J_{F}^{-T} \nabla \hat{\phi}_{j} \, ( x_{q}^{Q} ) \cdot \hat{\phi}_{i} \, ( x_{q}^{Q} ) \, \cdot \, \, \hat{w}_{q} } \]
+\item Termine di Reazione
+\[ \int_{T}{\alpha \, \phi_{j} \, \phi_{i} \; dx} \ \approx \ 2 \mid T \mid \sum_{q = 1}^{NQ} { a \, (F(x_{q}^{Q} )) \cdot \hat{\phi}_{j} \, ( x_{q}^{Q} ) \cdot \hat{\phi}_{i} \, ( x_{q}^{Q} ) \cdot \, \hat{w}_{q} } \]
+\end{itemize}
+riportiamo ora il codice Matlab che implementa questi calcoli su un triangolo generico della mesh:
+\begin{lstlisting}[caption=Termini Problemi Ellittico, style=matlab]
+% Actual Matrix KE Computation Loop    
+    for i=1:6
+        for j=1:i-1 % Loop That Use Matrix Symmetry To Halve The Computations
+            KE(i,j) = KE(j,i);
+        end
+        for j = i:6
+            for q=1:Nq
+                % Image on T (current triangle) Of The Quadrature Node
+                % tmp = (xq, yq) = (xhq(q),yhq(q))
+                % On The Riferiment Element
+                tmp = JF*[xhq(q); yhq(q)] + [x1; y1];
+                xq = tmp(1); % Quadrature Node X Coordinate
+                yq = tmp(2); % Quadrature Node Y Coordinate
+                % Diffusive term (Second Order)
+                % c * grad phi(j,q) ** grad phi (i,q) * whq(q)
+                diffusive = c(xq,yq)*dot(JFIT*[gphihqx(j,q);... 
+                                               gphihqy(j,q)],...
+                                         JFIT*[gphihqx(i,q);...
+                                               gphihqy(i,q)]...
+                                         )*whq(q);
+                % Reactive Term (First Order)
+                % beta ** grad phi(j,q) * phi (i,q) * whq(q)
+                [b1, b2] = beta(xq,yq);
+                transport = dot([b1; b2], ...
+                                JFIT*[gphihqx(j,q); gphihqy(j,q)]...
+                                )*phihq(i,q)*whq(q);
+                % Transport Term (Zeroth Order)
+                % alpha * phi(j,q) * phi (i,q) * whq(q)
+                reaction = alpha(xq,yq)*(phihq(j,q)*phihq(i,q))*whq(q);
+                % KE(i,j) Sum Update With All Three Terms
+                KE(i,j) = KE(i,j) + diffusive + transport + reaction;            
+            end
+            KE(i,j) = 2*area*KE(i,j);
+        end
+    end
+\end{lstlisting}
+
+\section{Calcolo Errori}
+Analogamente ai termini dell'equazione, possiamo anche calcolare gli errori tramite l'elemento di riferimento. Abbiamo infatti nel caso $L^{2}$
+\[
+\norm{u \, - \, u_{h}}_{L^{2}(\Omega)}^{2} \ = \ \int_{\Omega} { \abs{ u \, - \, u_{h} }^{2} dx} \ = \ \sum_{T \in \mathbb{T}}{\int_{T} { \abs{ u \, - \, u_{h} }^{2} dx}} 
+\]
+consideriamo ora lo sviluppo sulla base di $u_{h}$ e passiamo all'elemento di riferimento:
+\[
+= \ \sum_{T \in \mathbb{T}} {\int_{T} { \abs{ u (x) \, - \, \sum_{i=1}^{n} {u_{h}^{i} \, \phi_{i} \, (x)} }^{2} dx}}  \ = \ \sum_{T \in \mathbb{T}} 2 \abs{T} {\int_{\hat{T}} { \abs{ u \, (F(\hat{x})) \, - \, \sum_{i=1}^{n} {\hat{u_{h}}^{i} \, \hat{\phi}_{i} \, (\hat{x})} }^{2} d\hat{x}}}
+\]
+applicando infine la formula di quadratura otteniamo:
+\[
+\norm{ u \, - \, u_{h} }_{L^{2}(\Omega)}^{2} \ = \ \sum_{T \in \mathbb{T}} {2 \abs{T} \, \cdot \, \abs{ u \, (F(x_{q}^{Q})) \, - \, \sum_{i=1}^{n} {\hat{u_{h}}^{i} \, \hat{\phi}_{i} \, (\hat{x_{q}^{Q})}}}^2 } \, \cdot \, \hat{w}_{q}
+\]
+mentre nel caso $\mathbb{H}^{1}$, dato che per definizione di norma $\mathbb{H}^{1}(\Omega)$: 
+\[
+\norm{u \, - \, u_{h}}_{\mathbb{H}^{1}(\Omega)}^{2} \ = \ \norm{u \, - \, u_{h}}_{L^{2}(\Omega)}^{2} \ + \ \norm{\nabla (u \, - \, u_{h})}_{L^{2}(\Omega)}^{2}
+\]
+dobbiamo stimare solo il secondo termine, dato che il primo rientra nel caso precedente. Si ha dunque, con calcoli analoghi al caso $L^{2}$:
+\begin{flalign*}
+\norm{ \nabla (u \, - \, u_{h}) }_{L^{2}(\Omega)}^{2} \ &= \ \int_{\Omega} { \abs{ \nabla (u \, - \, u_{h}) }^{2} dx} \ = \ \int_{\Omega} { \abs{ \nabla u \, - \, \nabla u_{h} }^{2} dx} \\
+&= \ \sum_{T \in \mathbb{T}}{\int_{T} { \abs{ \nabla u \, - \, \nabla u_{h} }^{2} dx}} \ = \ \sum_{T \in \mathbb{T}} {\int_{T} { \abs{ \nabla u(x) \, - \, \sum_{i=1}^{n} {u_{h}^{i} \, \nabla \phi_{i} \, (x)} }^{2} dx}}  \\ 
+&= \ \sum_{T \in \mathbb{T}} 2 \abs{T} {\int_{\hat{T}} { \abs{ \nabla u \, (F(\hat{x})) \, - \, \sum_{i=1}^{n} { J_{F}^{-T} \, \hat{u_{h}}^{i} \, \nabla \hat{\phi}_{i} \, (\hat{x})} }^{2} d\hat{x}}} \\
+&= \sum_{T \in \mathbb{T}} {2 \abs{T} \, \cdot \, \abs{ \nabla u \, (F(x_{q}^{Q})) \, - \, \sum_{i=1}^{n} {J_{F}^{-T} \, \hat{u_{h}}^{i} \, \nabla  \hat{\phi}_{i} \, (\hat{x_{q}^{Q})}}}^2 } \, \cdot \, \hat{w}_{q}
+\end{flalign*}
+
+\hfill \\
+Riportiamo dunque il codice Matlab per il calcolo dell'errore $L^2$ e in $\mathbb{H}^{1}$:
+\begin{lstlisting}[caption=Errore $L^2$ e $\mathbb{H}^1$, style=matlab]
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% L2 and H1 Error Computation
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+if (strcmp(exact_solution,'yes'))
+    if (strcmp(out,'yes'))
+      disp('--- L2 and H1 Error Computation ---');
+    end
+    
+    % (xhq, yhq) Quadrature's Nodes
+    % whq = pesi
+    [xhq,yhq,whq] = quadrature(fdq);
+
+    % Basis Function Computed On The Quadrature Nodes Of The Riferement Element
+
+    Nq = length(xhq); % Number Of Quadrature Nodes
+    phihq = zeros(6,Nq); % Phihq Definition
+    gphihqx = zeros(6,Nq); % Gradphihq Definition
+    gphihqy = zeros(6,Nq); % Gradphihq Definition
+
+    % Basis Functions Computation Loop
+    for i=1:6
+      for q=1:Nq
+            phihq(i,q) = phih2(i,xhq(q),yhq(q));
+      end
+    end
+
+    % L2 Error Variable
+    errL2sq = 0;
+    
+    % H1 Error Variable
+    errH1sq = 0;
+    
+    % Actual Errors Computation
+    % Works By Computing The Global Errors As A Summation
+    % Of The Errors On Every Triangle    
+    for iele=1:nele
+    
+    % Acquire Informations From The iele Elements
+    
+        % Vertices Acquisition
+        v1 = vertices(iele,1);
+        v2 = vertices(iele,2);
+        v3 = vertices(iele,3);
+    
+    
+        % Vertex 1 Coordinates
+        x1 = xv(v1);
+        y1 = yv(v1);
+    
+        % Vertex 2 Coordinates
+        x2 = xv(v2);
+        y2 = yv(v2);
+    
+        % Vertex 3 Coordinates
+        x3 = xv(v3);
+        y3 = yv(v3);  
+    
+    
+    % Jacobian Matrix Computation
+ 
+        % F Jacobian
+        JF = [x2-x1   x3-x1
+              y2-y1   y3-y1]; 
+           
+        % F Jabobian Inverse
+        JFI = inv(JF);
+     
+        % F Jacobian Inverse Transposed   
+        JFIT = JFI';
+        
+        % Single Element Area (Triangle's Area)
+        area = (1/2)*det(JF);
+    
+    % Recover Triangle's Edges
+        l1 = edges(iele,1); % First Edge
+        l2 = edges(iele,2); % Second Edge
+        l3 = edges(iele,3); % Third Edge
+
+    % Global Degrees Of Freedon
+
+        % Vertex i ---> i
+        % Edge i   ---> nver
+        % This row-array holds the current triangle's Global Degrees Of Freedom
+        dofg = [v1 v2 v3 (nver+l1) (nver+l2) (nver+l3)];
+    
+    % Recover the uT coefficients
+        uT = uh(dofg);
+        
+        % Tmp variables to hold the element result
+        sqL2 = 0;
+        sqH1 = [ 0; 0];
+        normsqH1 = 0;
+        
+        % Computation Over Weighting Nodes
+        for q=1:Nq
+            % Compute the sum on phi(i)
+            tmpL2_1 = 0; 
+            tmpH1 = [0; 0];       
+            for i=1:6
+                tmpL2_1 = tmpL2_1 + uT(i)*phihq(i,q);
+                tmpH1 = tmpH1 + JFIT*uT(i)*[gphihqx(i,q); gphihqy(i,q)];
+            end
+            % Error Computation
+            tmpL2_2 = JF*[xhq(q);yhq(q)] + [x1;y1];
+            xq = tmpL2_2(1);
+            yq = tmpL2_2(2);            
+            sqL2 = sqL2 + (ue(xq,yq) - tmpL2_1)^2 * whq(q);
+            %sqH1 = sqH1 + [ux(xq,yq); uy(xq,yq)] - tmpH1;
+            sqH1 = sqH1 + ue(xq,yq) - tmpH1;
+            normsqH1 = normsqH1 + dot(sqH1, sqH1)*whq(q);
+        end
+    
+        sqL2 = 2*area*sqL2;
+        normsqH1 = 2*area*normsqH1;
+        
+        % L2 Error On The Element (Squared)
+        errL2sq = errL2sq + sqL2;
+        
+        % H1 Error On The Element (Squared)
+        % ErrH1 = errL2(u) + errL2(grad u)
+        errH1sq = errH1sq + errL2sq + normsqH1;
+        
+    end  
+    
+    % Final L2 Error Computation
+    errL2 = sqrt(errL2sq);
+    
+    % Final H1 Error Computation
+    errH1 = sqrt(errH1sq);
+    
+    if (strcmp(out,'yes'))
+      disp(['      L2 Error: ' num2str(errL2)]);
+      disp(['      H1 Error: ' num2str(errH1)]);
+    end
+    
+end
+\end{lstlisting}
 
 
 \chapter{Esperimenti Numerici}
-Consideriamo in questo capitolo un confronto tra soluzione esatta e soluzione approssimata per verificare a livello pratico i risultati teorici di convergenza rispetto al parametro geometrico $h$ della specifica mesh.
+Consideriamo in questo capitolo un confronto tra soluzione esatta e soluzione approssimata per verificare a livello pratico i risultati teorici di convergenza rispetto al parametro geometrico $h$ della specifica mesh. Usiamo i seguenti valori per il valore $h_max$:
+\[ 
+h \ = \ [ \, 0.05 \ - \ 0.10 \ - \ 0.20 \ - \ 0.30 \ - \ - 0.40 \ - 0.50 \, ] \]
+
+\section{Prima Equazione}
+Consideriamo dunque la seguente soluzione esatta:
+\[ u_e \ = \ x^2 + y^2 + \sin(x) \, \cdot \, \cos(x) \]
+e quindi i coefficienti:
+\[ c \ = \ 1 + x^2 + y^2 \qquad \beta = [5x, \, 5y] \qquad a = e^{x \cdot y} \]
+e risolviamo l'equazione associata tramite gli elementi finiti di ordine $k = 2$ usando una formula di quadratura di ordine $3$. 
+
+\subsection{Mesh Uniforme}
+Partiamo da mesh uniformi. Otteniamo i seguenti errori:
+\[ \text{ErrL2} \ = \ [] \]
+\[ \text{ErrH1} \ = \ [] \]
+Inanzitutto mostriamo i valori ottenuti con un ordine di quadratura $5$, che in accordo con la teoria non dovrebbero influire in modo rilevante sull'errore globale:
+\[ \text{ErrL2} \ = \ [] \]
+\[ \text{ErrH1} \ = \ [] \]
+Abbiamo infatti che la differenza tra gli errori con differenti ordini di quadratura è data da:
+\[ \abs{ \Delta \text{ErrL2}} \ = \ [0] \]
+\[ \abs{ \Delta \text{ErrH1}} \ = \ [0] \]
+ovvero la differenza tra gli errori è trascurabile. Passiamo ora ai grafici ottenuti:
+
+\subsection{Mesh Non Uniforme}
+Passiamo ora al caso di mesh non uniformi. Abbiamo i seguenti errori:
+\[ \text{ErrL2} \ = \ [] \]
+\[ \text{ErrH1} \ = \ [] \]
+Mostriamo che anche in questo caso l'ordine di quadratura superiore a $3$ non porta evidenti benefici sulla precisione della soluzione approssimata. Usiamo in particolare un ordine di quadratura uguale a $7$:
+\[ \text{ErrL2} \ = \ [] \]
+\[ \text{ErrH1} \ = \ [] \]
+E la differenza tra gli errori è data da
+\[ \abs{ \Delta \text{ErrL2}} \ = \ [0] \]
+\[ \abs{ \Delta \text{ErrH1}} \ = \ [0] \]
+che è trascurabile. I grafici, effettuati sia rispetto al massimo $h$ della triangolazione che a quello medio, sono i seguenti:
+
+
+\section{Seconda Equazione}
+Consideriamo ora la seguente soluzione esatta:
+\[ u_e \ = \ e^{x \, + \, y} + x \, \sin(y) + y \, \sin(x) \]
+e quindi i coefficienti:
+\[ c \ = \ 14 + 3 \, x \, y \qquad \beta = [0, \, 0] \qquad a = \log(\, x + \, y \, + 2) \]
+e risolviamo l'equazione associata tramite gli elementi finiti di ordine $k = 2$ usando una formula di quadratura di ordine $3$. 
+
+\subsection{Mesh Uniforme}
+Partiamo da mesh uniformi. Otteniamo i seguenti errori:
+\[ \text{ErrL2} \ = \ [] \]
+\[ \text{ErrH1} \ = \ [] \]
+Passiamo ora ai grafici ottenuti:
+
+\subsection{Mesh Non Uniforme}
+Passiamo ora al caso di mesh non uniformi. Abbiamo i seguenti errori:
+\[ \text{ErrL2} \ = \ [] \]
+\[ \text{ErrH1} \ = \ [] \]
+I grafici, effettuati sia rispetto al massimo $h$ della triangolazione che a quello medio, sono i seguenti:
+
+
 
 
 \printindex
