@@ -38,4 +38,4 @@
 # Triangles dimensions
 # The software tries to make triangles as equal as possible
 # Region, Point in region, Area constrain
-1 0.5 0.5 0.01
+1 0.5 0.5 0.005

@@ -10,9 +10,6 @@ function [errL2, errH1, h_max, h_avg] = fem2 (omega, N, fdq, plot, exact_solutio
 % out: print output flag ('yes' or 'no')
 %%%%%%%%%%%%%%%%%%%
 
-% [errL2, errH1, h_max, h_avg] = fem2 ('uniform', 15, 'degree=3', 'yes', 'yes', 'yes');
-% [errL2, errH1, h_max, h_avg] = fem2 ('square', 15, 'degree=3', 'yes', 'yes', 'yes');
-
 % Domain Definition
 % omega = 'square'; % Unit Square
 
@@ -93,7 +90,7 @@ end
 % Kh Matrix Assembling
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Basis Function Computed On The Quadrature Nodes Of The Referement Element
+% Basis Function Computed On The Quadrature Nodes Of The Riferement Element
 
 Nq = length(xhq); % Number Of Quadrature Nodes
 phihq = zeros(6,Nq); % Phihq Definition
@@ -116,7 +113,7 @@ if (strcmp(out,'yes'))
 end
 for i=1:6
     for q=1:Nq
-        [gx, gy] = gradphih2(i,xhq(q),yhq(q));
+        [gx gy] = gradphih2(i,xhq(q),yhq(q));
         gphihqx(i,q) = gx;
         gphihqy(i,q) = gy;
     end
@@ -128,135 +125,126 @@ A = sparse(nver+nedge,nver+nedge);
 % b Array Definition
 b = zeros(nver+nedge,1);
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Computation On Every Triangle
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+% Main Computation Loop On Every Triangle
 if (strcmp(out,'yes'))
   disp('--- A Matrix and b Array Computation ---');
 end
-
-% Main Computation Loop On Every Triangle
-for iele=1:nele
+  for iele=1:nele
     
-%%% Acquire Informations From The iele Elements
+% Acquire Informations From The iele Elements
     
-  % Vertices Acquisition
-  v1 = vertices(iele,1);
-  v2 = vertices(iele,2);
-  v3 = vertices(iele,3);
-    
-  % Vertex 1 Coordinates
-  x1 = xv(v1);
-  y1 = yv(v1);
-    
-  % Vertex 2 Coordinates
-  x2 = xv(v2);
-  y2 = yv(v2);
-    
-  % Vertex 3 Coordinates
-  x3 = xv(v3);
-  y3 = yv(v3);  
+    % Vertices Acquisition
+    v1 = vertices(iele,1);
+    v2 = vertices(iele,2);
+    v3 = vertices(iele,3);
     
     
-%%% Jacobian Matrix Computation
+    % Vertex 1 Coordinates
+    x1 = xv(v1);
+    y1 = yv(v1);
+    
+    % Vertex 2 Coordinates
+    x2 = xv(v2);
+    y2 = yv(v2);
+    
+    % Vertex 3 Coordinates
+    x3 = xv(v3);
+    y3 = yv(v3);  
+    
+    
+ % Jacobian Matrix Computation
  
-  % F Jacobian
-  JF = [x2 - x1   x3 - x1
-        y2 - y1   y3 - y1];
+    % F Jacobian
+    JF = [x2 - x1   x3 - x1
+          y2 - y1   y3 - y1];
       
-  % F Jacobian Inverse
-  JFI = inv(JF);
+    % F Jacobian Inverse
+    JFI = inv(JF);
     
-  % F Jacobian Inverse Transpost
-  JFIT = JFI';
+    % F Jacobian Inverse Transpost
+    JFIT = JFI';
     
     
 % Single Element Area
-  area = (1/2)*det(JF);
+    area = 0.5*det(JF);
     
 % KE Matrix Definition   
-  KE = zeros(6,6);
+    KE = zeros(6,6);
     
 % Actual Matrix KE Computation Loop    
-  for i=1:6
-    %  for j=1:i-1 % Loop That Use Matrix Symmetry To Halve The Computations
-    %        KE(i,j) = KE(j,i);
-    %  end % End For j
-    for j = 1:6
-      for q=1:Nq
-      
-        % Image on T (current triangle) Of The Quadrature Node
-        % tmp = (xq, yq) = (xhq(q),yhq(q))
-        % On The Riferiment Element
-        tmp = JF*[xhq(q); yhq(q)] + [x1; y1];
-        xq = tmp(1); % Quadrature Node X Coordinate
-        yq = tmp(2); % Quadrature Node Y Coordinate
-        
-        % Diffusive term (Second Order)
-        % c * grad phi(j,q) ** grad phi (i,q) * whq(q)
-        diffusive = c(xq,yq)*dot(JFIT*[gphihqx(j,q);... 
-                                       gphihqy(j,q)],...
-                                 JFIT*[gphihqx(i,q);...
-                                       gphihqy(i,q)]...
-                                )*whq(q);
-        
-        % Transport Term (First Order)
-        % beta ** grad phi(j,q) * phi (i,q) * whq(q)
-        [b1, b2] = beta(xq,yq);
-        transport = dot([b1; b2], ...
-                        JFIT*[gphihqx(j,q); gphihqy(j,q)]...
-                        )*phihq(i,q)*whq(q);
-        
-        % Reaction Term (Zeroth Order)
-        % alpha * phi(j,q) * phi (i,q) * whq(q)
-        reaction = alpha(xq,yq)*(phihq(j,q)*phihq(i,q))*whq(q);
-        
-        % KE(i,j) Sum Update With All Three Terms
-        KE(i,j) = KE(i,j) + diffusive + transport + reaction;            
+    for i=1:6
+        for j=1:i-1 % Loop That Use Matrix Symmetry To Halve The Computations
+            KE(i,j) = KE(j,i);
+        end
+        for j = i:6
+            for q=1:Nq
+                % Image on T (current triangle) Of The Quadrature Node
+                % tmp = (xq, yq) = (xhq(q),yhq(q))
+                % On The Riferiment Element
+                tmp = JF*[xhq(q); yhq(q)] + [x1; y1];
+                xq = tmp(1); % Quadrature Node X Coordinate
+                yq = tmp(2); % Quadrature Node Y Coordinate
+                % Diffusive term (Second Order)
+                % c * grad phi(j,q) ** grad phi (i,q) * whq(q)
+                diffusive = c(xq,yq)*dot(JFIT*[gphihqx(j,q);... 
+                                               gphihqy(j,q)],...
+                                         JFIT*[gphihqx(i,q);...
+                                               gphihqy(i,q)]...
+                                         )*whq(q);
+                % Reactive Term (First Order)
+                % beta ** grad phi(j,q) * phi (i,q) * whq(q)
+                [b1, b2] = beta(xq,yq);
+                transport = dot([b1; b2], ...
+                                JFIT*[gphihqx(j,q); gphihqy(j,q)]...
+                                )*phihq(i,q)*whq(q);
+                % Transport Term (Zeroth Order)
+                % alpha * phi(j,q) * phi (i,q) * whq(q)
+                reaction = alpha(xq,yq)*(phihq(j,q)*phihq(i,q))*whq(q);
+                % KE(i,j) Sum Update With All Three Terms
+                KE(i,j) = KE(i,j) + diffusive + transport + reaction;            
+            end
+            KE(i,j) = 2*area*KE(i,j);
+        end
+    end
 
-      end % End For q
+% Recover Triangle's Edges
+    l1 = edges(iele,1); % First Edge
+    l2 = edges(iele,2); % Second Edge
+    l3 = edges(iele,3); % Third Edge
 
-      KE(i,j) = 2*area*KE(i,j);
+% Global Degrees Of Freedon
 
-    end % End For j
-  
-  end % End For i
+    % Vertex i ---> i
+    % Edge i   ---> nver
+    % This array gives the current triangle's Global Degrees Of Freedom
+    dofg = [v1 v2 v3 (nver+l1) (nver+l2) (nver+l3)];
 
-%%% Recover Triangle's Edges
-  l1 = edges(iele,1); % First Edge
-  l2 = edges(iele,2); % Second Edge
-  l3 = edges(iele,3); % Third Edge
 
-%%% Global Degrees Of Freedom
-  % Vertex i ---> i
-  % Edge i   ---> nver
-  % This array gives the current triangle's Global Degrees Of Freedom
-  dofg = [v1 v2 v3 (nver+l1) (nver+l2) (nver+l3)];
-  % Global Matrix A Computation
-  A(dofg,dofg) = A(dofg,dofg) + KE;
-     
+% Global Matrix A Computation
+    A(dofg,dofg) = A(dofg,dofg) + KE;
+    
+    
 % FE Array Definition   
-  FE = zeros(6,1);
+    FE = zeros(6,1);
     
 % Actual Array Fe Computation Loop  
-  for i=1:6
-    for q=1:Nq
-      % Image on T (current triangle) Of The Quadrature Node
-      % tmp = (xq, yq) = (xhq(q),yhq(q))
-      tmp = JF*[xhq(q); yhq(q)] + [x1; y1];
-      xq = tmp(1); % Quadrature Node X Coordinate
-      yq = tmp(2); % Quadrature Node Y Coordinate
-      FE(i) = FE(i) + f(xq,yq)*phihq(i,q)*whq(q);        
-    end % End For q
-    FE(i) = 2*area*FE(i);
-  end % End For i
+    for i=1:6
+        for q=1:Nq
+            % Image on T (current triangle) Of The Quadrature Node
+            % tmp = (xq, yq) = (xhq(q),yhq(q))
+            tmp = JF*[xhq(q); yhq(q)] + [x1; y1];
+            xq = tmp(1); % Quadrature Node X Coordinate
+            yq = tmp(2); % Quadrature Node Y Coordinate
+            FE(i) = FE(i) + f(xq,yq)*phihq(i,q)*whq(q);        
+        end
+        FE(i) = 2*area*FE(i);
+    end
 
-  % Global b Coefficient Computation
-  b(dofg) = b(dofg) + FE;
-      
-end % End For iele
+% Global b Coefficient Computation
+    b(dofg) = b(dofg) + FE;
+    
+    
+end
 
 % Spy A Matrix
 if (strcmp(plot,'yes'))
@@ -289,17 +277,17 @@ for iv=1:nver
         uh(iv) = g(xv(iv),yv(iv));
         % Update Constant Term
         b = b - uh(iv)*A(:,iv);
-    else % The vertex iv is a free node
+    else % Free Node
         NL = [NL iv];
-    end % End If   
-end % End For iv
+    end    
+end
 
 % Border Conditions Over Edges (Medium Points)
 for iedge=1:nedge  
     % Border Degree Of Freedom
     dof = nver+iedge;  
     % Constant Term Update    
-    if (edgemarker(iedge) == 1) % Border Edge
+    if edgemarker(iedge)==1 % Border Edge
     % Edge Medium Point 
         % First Point
         v1 = endpoints(iedge,1);
@@ -314,11 +302,11 @@ for iedge=1:nedge
         ym = (y1 + y2) / 2;
     % Constant Tern Update
         uh(dof) = g(xm,ym);
-        b = b - uh(dof)*A(:,dof);
+        b = b -uh(dof)*A(:,dof);
     else % Free Edge       
         NL = [NL dof];        
-    end % End If 
-end % End For iedge
+    end    
+end
 
 
 
@@ -482,7 +470,113 @@ end
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% H1 Error Computation (beirao)
+% H1 Error Computation
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+if (strcmp(exact_solution,'yes'))
+    if (strcmp(out,'yes'))
+      disp('--- L2 Error Computation ---');
+    end
+    
+
+    % (xhq, yhq) Quadrature's Nodes
+    % whq = pesi
+    [xhq,yhq,whq] = quadrature(fdq);
+
+    % Basis Function Computed On The Quadrature Nodes Of The Riferement Element
+
+    Nq = length(xhq); % Number Of Quadrature Nodes
+    phihq = zeros(6,Nq); % Phihq Definition
+    gphihqx = zeros(6,Nq); % Gradphihq Definition
+    gphihqy = zeros(6,Nq); % Gradphihq Definition
+
+    % Basis Functions Computation Loop
+    for i=1:6
+      for q=1:Nq
+            phihq(i,q) = phih2(i,xhq(q),yhq(q));
+      end
+    end
+
+    % H1 Error Variable
+    errH1sq = 0;
+    
+    for iele=1:nele
+    
+    % Acquire Informations From The iele Elements
+    
+        % Vertices Acquisition
+        v1 = vertices(iele,1);
+        v2 = vertices(iele,2);
+        v3 = vertices(iele,3);
+        
+    
+        % Vextx 1 Coordinates
+        x1 = xv(v1);
+        y1 = yv(v1);
+    
+        % Vextx 2 Coordinates
+        x2 = xv(v2);
+        y2 = yv(v2);
+    
+        % Vextx 3 Coordinates
+        x3 = xv(v3);
+        y3 = yv(v3);  
+    
+    
+    % Jacobian Matrix Computation
+ 
+        % F Jacobian
+        JF = [x2-x1   x3-x1
+              y2-y1   y3-y1];    
+    
+        % Single Element Area
+        area = (1/2)*det(JF);
+    
+    % Recover Triangle's Edges
+        l1 = edges(iele,1); % First Edge
+        l2 = edges(iele,2); % Second Edge
+        l3 = edges(iele,3); % Third Edge
+
+    % Global Degrees Of Freedon
+
+        % Vertex i ---> i
+        % Edge i   ---> nver
+        % This array gives the current triangle's Global Degrees Of Freedom
+        dofg = [v1 v2 v3 (nver+l1) (nver+l2) (nver+l3)];
+    
+    % Recover the uT coefficients
+        uT = uh(dofg);    
+        sq = 0;
+        for q=1:Nq
+            % Compute the sum on phi(i)
+            tmp = 0;        
+            for i=1:6
+                tmp = tmp + uT(i)*phihq(i,q);
+            end
+            tmp2 = JF*[xhq(q); yhq(q)] + [x1;y1];
+            xq = tmp2(1);
+            yq = tmp2(2);            
+            sq = sq + (ue(xq,yq)-tmp)^2 * whq(q);
+        end
+    
+        sq = sq*2*area;
+        
+        errL2sq = errL2sq + sq;
+        
+    end  
+    
+    % Final Error Computation
+    errL2 = sqrt(errL2sq);
+    
+    if (strcmp(out,'yes'))
+      disp(['      L2 Error: ' num2str(errL2)]);
+    end
+    
+end
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% H1 Error Computation
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 errH = 0;
@@ -541,7 +635,6 @@ if (strcmp(out,'yes'))
   disp(['      H1 Error (Seminorm): ' num2str(errH)]);
   disp(['      H1 Error (Norm): ' num2str(errH+errL2)]);
 end
-my_errH1 = errH+errL2;
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -588,7 +681,8 @@ if (strcmp(exact_solution,'yes'))
         v1 = vertices(iele,1);
         v2 = vertices(iele,2);
         v3 = vertices(iele,3);
-        
+    
+    
         % Vertex 1 Coordinates
         x1 = xv(v1);
         y1 = yv(v1);
@@ -634,11 +728,12 @@ if (strcmp(exact_solution,'yes'))
         
         % Tmp variables to hold the element result
         sqL2 = 0;
-        sqH1 = 0;
+        sqH1 = [ 0; 0];
+        normsqH1 = 0;
         
         % Computation Over Weighting Nodes
         for q=1:Nq
-            % Compute the u_h expansion over the \hat{phi}(i)
+            % Compute the sum on phi(i)
             tmpL2_1 = 0; 
             tmpH1 = [0; 0];       
             for i=1:6
@@ -650,19 +745,19 @@ if (strcmp(exact_solution,'yes'))
             xq = tmpL2_2(1);
             yq = tmpL2_2(2);            
             sqL2 = sqL2 + (ue(xq,yq) - tmpL2_1)^2 * whq(q);
-            [uegx, uegy] = ueGrad(xq,yq); 
-            sqH1 = sqH1 + (norm([uegx; uegy] - tmpH1)^2)*whq(q);
+            sqH1 = sqH1 + ueGrad(xq,yq) - tmpH1;
+            normsqH1 = normsqH1 + dot(sqH1, sqH1)*whq(q);
         end
     
         sqL2 = 2*area*sqL2;
-        sqH1 = 2*area*sqH1;
+        normsqH1 = 2*area*normsqH1;
         
         % L2 Error On The Element (Squared)
         errL2sq = errL2sq + sqL2;
         
         % H1 Error On The Element (Squared)
         % ErrH1 = errL2(u) + errL2(grad u)
-        errH1sq = errH1sq + errL2sq + sqH1;
+        errH1sq = errH1sq + errL2sq + normsqH1;
         
     end  
     
@@ -679,10 +774,6 @@ if (strcmp(exact_solution,'yes'))
     
 end
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% h_max And h_edge Computation
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 if (strcmp(meshgen, 'triangle'))
 
@@ -716,12 +807,11 @@ if (strcmp(meshgen, 'triangle'))
   
 else 
 
-  h_max = sqrt(2)/N;
-  h_avg = sqrt(2)/N;
+  h_max = 1/N;
+  h_avg = 1/N;
 
 end
 
-%errH1 = my_errH1;
 
 end % End Function
 

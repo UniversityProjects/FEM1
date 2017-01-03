@@ -7,6 +7,10 @@
 \usepackage{mathtools}
 \usepackage{url}
 \usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
+\graphicspath{ {Pictures/} }
+\usepackage{wrapfig}
 \usepackage{tikz}
 \usepackage{tkz-euclide}
 \usetikzlibrary{matrix,arrows,shapes.geometric}
@@ -178,13 +182,13 @@ il concetto di derivata debole risulta quindi un'estensione a quello di derivazi
 Attraverso la definizione di derivata debole possiamo definire lo spazio di Sobolev $\mathbb{H}^{1}(\Omega)$:
 \begin{definition} [\textbf{$\mathbb{H}^{1}(\Omega)$}] \index{Spazio $\mathbb{H}^{1}$} \label{Spazio H1}
 \hfill \\
-\[ \mathbb{H}^{1}(\Omega) \quad = \quad \left \{ v \in \mathbb{L}^{2}(\Omega): \quad \nabla{v} \in \mathbb{L}^{2}(\Omega) \right \}	\]
+\[ \mathbb{H}^{1}(\Omega) \ = \ \left \{ v \in \mathbb{L}^{2}(\Omega): \quad \nabla{v} \in \mathbb{L}^{2}(\Omega) \right \}	\]
 dove il gradiente è inteso nel senso della derivazione debole analogamente a come definito sopra. Questo spazio risulta essere uno spazio di Hilbert con prodotto scalare:
-\[ < v, v' >_{\mathbb{H}^{1}(\Omega)} \quad = \quad < v, v' >_{\mathbb{L}^{2}(\Omega)} + < \nabla{v}, \nabla{v}' >_{\mathbb{L}^{1}(\Omega)}\]
+\[ < v, v' >_{\mathbb{H}^{1}(\Omega)} \ = \ < v, v' >_{\mathbb{L}^{2}(\Omega)} + < \nabla{v}, \nabla{v}' >_{\mathbb{L}^{1}(\Omega)}\]
 ovvero con norma indotta dal prodotto scalare:
-\[ \norm{v}_{\mathbb{H}^{1}(\Omega)}\quad = \quad \norm{v}_{\mathbb{L}^{2}(\Omega)} + \norm{\nabla{v}}_{\mathbb{L}^{2}(\Omega)} \]
+\[ \norm{v}_{\mathbb{H}^{1}(\Omega)}\ = \ \norm{v}_{\mathbb{L}^{2}(\Omega)} + \norm{\nabla{v}}_{\mathbb{L}^{2}(\Omega)} \]
 inoltre possiamo definire su $\mathbb{H}^{1}$ la seminorma
-\[ \abs{v}_{\mathbb{H}^{1}(\Omega)}\quad = \quad  \norm{\nabla{v}}_{\mathbb{L}^{2}(\Omega)} \]
+\[ \abs{v}_{\mathbb{H}^{1}(\Omega)} \ = \  \norm{\nabla{v}}_{\mathbb{L}^{2}(\Omega)} \]
 che per il lemma di Poincarè è equivalente alla norma precedente.
 \qed
 \end{definition}
@@ -195,7 +199,7 @@ L'idea dietro alla formulazione debole è che il problema differenziale, in quan
 \hfill \\
 Il problema ellittico \ref{Problema Di Dirichlet Omogeneo} può essere riscritto in forma variazionale nel seguente modo:\\
 Trovare $u \in  \mathbb{V} \, = \, \mathbb{H}^{1}(\Omega)$ tale che:
-\[ \int_{\Omega}{c \, \nabla u \nabla v \; dx} \; + \; \int_{\Omega}{(\beta \cdot \nabla u) \, v \; dx} \; + \; \int_{\Omega}{\alpha \, u \, v \; dx} \quad = \quad \int_{\Omega}{f \, v \; dx} \qquad \forall v \in \mathbb{V} \, = \, \mathbb{H}^{1}(\Omega) \]
+\[ \int_{\Omega}{c \, \nabla u \nabla v \; dx} \; + \; \int_{\Omega}{(\beta \cdot \nabla u) \, v \; dx} \; + \; \int_{\Omega}{\alpha \, u \, v \; dx} \ = \ \int_{\Omega}{f \, v \; dx} \qquad \forall v \in \mathbb{V} \, = \, \mathbb{H}^{1}(\Omega) \]
 dove $u$ è detta soluzione debole del problema variazionale.
 \end{theorem}
 \hfill \\
@@ -230,7 +234,6 @@ da cui risulta che
 \hfill \\
 allo stesso modo si può procedere per il caso non omogeneo \ref{Problema Di Dirichlet}, dove però al bordo l'integrale non è più nullo, ma va considerato con la restrizione al bordo $\restr{u}{\partial \Omega} = g$ \footnote{Dato che $u \in \mathbb{H}^{1}(\Omega)$, non ha senso in generale l'uguaglianza a livello puntuale. Per ovviare al problema si considera la restrizione nel senso delle funzioni di traccia}. Si può dimostrare che nel caso non omogeneo si ottiene la forma debole \label{Problema Ellittico Debole Non Omogeneo} \index{Problema Ellittico Debole Non Omogeneo}:
 \[ \int_{\Omega}{c \, \nabla u \nabla v \; dx} \; + \; \int_{\Omega}{(\beta \cdot \nabla u) \, v \; dx} \; + \; \int_{\Omega}{\alpha \, u \, v \; dx} \quad = \quad \int_{\Omega}{f \, v \; dx} \; + \; \int_{\partial\Omega}{g \, v \; dx}\]
-
 \hfill \\
 Il problema in forma debole \ref{Problema Ellittico Debole}, può essere espresso in forma astratta:
 \begin{definition} [Problema Astratto] \index{Problema Astratto} \label{Problema Astratto}
@@ -255,7 +258,7 @@ Nel nostro caso particolare \ref{Problema Ellittico Debole}  il problema astratt
 \qed
 \end{definition}
 Il lemma di Lax-Milgram fornisce un risultato di esistenza e unicità della soluzione (debole) al problema astratto, che coincide dunque con l'esistenza e unicità della soluzione di \ref{Problema Ellittico Debole} e di \ref{Problema Di Dirichlet}:
-\begin{theorem} [Lax-Milgram - 1954] \index{Lemma di Lax-Milgram} \label{Lemma di Lax-Milgram} \footnote{Questo lemma è stato in seguito generalizzato da Babuska \cite{babuska1971BLM}, in modo da considerare due spazi di appartenzenza diversi per $u$ e per $v$ e indebolendo la richiesta sulla coercività (richiedendo la coercività debole).}
+\begin{theorem} [Lax-Milgram - 1954] \index{Lemma di Lax-Milgram} \label{Lemma di Lax-Milgram}
 \hfill \\
 Esiste ed è unica la soluzione debole $u \in \mathbb{V}$ di Hilbert per il problema astratto \ref{Problema Astratto} se:
 \begin{itemize}
@@ -266,12 +269,18 @@ Esiste ed è unica la soluzione debole $u \in \mathbb{V}$ di Hilbert per il prob
 \end{theorem}
 \hfill \\
 Nel caso in cui $a(u,v)$ sia anche simmetrica, tale forma è un prodotto scalare, e il lemma di Lax-Milgram deriva direttamente dal teorema di rappresentazione di Riesz. \\
-Nel caso particolare di \ref{Problema Ellittico Astratto}, si può dimostrare che affinchè valgano le condizioni delle ipotesi del lemma di Lax-Milgram \ref{Lemma di Lax-Milgram}, le funzioni caratterizzanti il problema devono rispettare le seguenti:
+\hfill \\
+Considerando in particolare il problema ellittico \ref{Problema Ellittico Astratto}, abbiamo il seguente teorema di regolarità:
+\begin{theorem}[Regolarità Problema Ellittico]
+Affinchè valgano le ipotesi del lemma di Lax-Milgram \ref{Lemma di Lax-Milgram}, le funzioni $c$, $\beta$, $\alpha$ caratterizzanti il problema ellittico
+\[ a(u,v) \ = \ \int_{\Omega}{c \, \nabla u \nabla v \; dx} \; + \; \int_{\Omega}{(\beta \cdot \nabla u) \, v \; dx} \; + \; \int_{\Omega}{\alpha \, u \, v \; dx} \ = \ \int_{\Omega}{f \, v \; dx} \ = \ F(v) \]
+devono rispettare le seguenti proprietà:
 \begin{itemize}
 	\item $c(\underline{x}) \in L^{\infty} \qquad c_{max} \ \geq \ c(\underline{x}) \ \geq \ c_{min} \ > \ 0 $
 	\item $\alpha(\underline{x}) \in L^{2}(\Omega), \ \beta(\underline{x}) \in C^{1}(\Omega) \qquad \alpha \, - \, div \beta \ = \ 0$
 	\item $f(\underline{x}) \in L^{2}(\Omega)$
 \end{itemize}
+\end{theorem}
 
 
 \section{Metodo Galerkin}
@@ -310,7 +319,7 @@ E' possibile inoltre dare una stima dell'errore compiuto, attraverso il lemma di
 \begin{theorem} [Lemma di Cèa] \index{Lemma Di Cèa} \label{Lemma Di Cea}
 \hfill \\
 L'errore compiuto con l'approssimazione tramite il problema discreto permette la seguente stima:
-\[ \mid \mid \ u \, - \, u_{h} \ \mid \mid_{\mathbb{V}(\Omega)} \quad \leq \quad \frac{M}{c} \ Inf_{v_{h} \in \mathbb{V}_{h}} \mid \mid \ u \, - \, v_{h} \ \mid \mid_{\mathbb{V}(\Omega)} \]
+\[ \mid \mid u \, - \, u_{h} \mid \mid_{\mathbb{V}(\Omega)} \ \leq \ \frac{M}{c} \ \inf_{v_{h} \in \mathbb{V}_{h}(\Omega)} \mid \mid u \, - \, v_{h} \mid \mid_{\mathbb{V}(\Omega)} \]
 dove $M$ è la costante della continuità e $c$ quella della coercività di $a(\cdot,\cdot)$.
 \qed
 \end{theorem}
@@ -396,7 +405,7 @@ Definiamo dunque il problema astratto discreto agli elemeti finiti come al caso 
 
 \section{Stime Teoriche Errori}
 Raccogliamo in questa sezione varie stime per l'errore compiuto nell'approssimazione agli elementi finiti per il problema ellittico \ref{Problema Ellittico Debole}. Inanzitutto ricordiamo il lemma di Cea \ref{Lemma Di Cea} per la stima dell'errore compiuto da un generico metodo Galerkin \ref{Metodo Galerkin} (e quindi valido per problemi più generali del nostro problema ellittico):
-\[ \mid \mid u \, - \, u_{h} \mid \mid_{\mathbb{V}(\Omega)} \ \leq \ \frac{M}{c} \ Inf_{v_{h} \in \mathbb{V}_{h}} \mid \mid u \, - \, v_{h} \mid \mid_{\mathbb{V}(\Omega)} \]
+\[ \mid \mid u \, - \, u_{h} \mid \mid_{\mathbb{V}(\Omega)} \ \leq \ \frac{M}{c} \ \inf_{v_{h} \in \mathbb{V}_{h}(\Omega)} \mid \mid u \, - \, v_{h} \mid \mid_{\mathbb{V}(\Omega)} \]
 dove $M$ è la costante della continuità e $c$ quella della coercività di $a(\cdot,\cdot)$. Vogliamo però dare delle stime dell'errore compiuto dall'approssimazione agli elementi finiti in varie norme. In particolare vogliamo stimare l'errore $u - u_{h}$ in norma $L^{2}(\Omega)$
 \[ \mid \mid u \, - \, u_{h} \mid \mid_{L^{2}(\Omega)}^{2} \ = \ \int_{\Omega} { (u \, - \, u_{h})^{2} dx}\]
 e in norma $\mathbb{H}^{1}$:
@@ -697,7 +706,7 @@ consideriamo ora lo sviluppo sulla base di $u_{h}$ e passiamo all'elemento di ri
 \]
 applicando infine la formula di quadratura otteniamo:
 \[
-\norm{ u \, - \, u_{h} }_{L^{2}(\Omega)}^{2} \ = \ \sum_{T \in \mathbb{T}} {2 \abs{T} \, \cdot \, \abs{ u \, (F(x_{q}^{Q})) \, - \, \sum_{i=1}^{n} {\hat{u_{h}}^{i} \, \hat{\phi}_{i} \, (\hat{x_{q}^{Q})}}}^2 } \, \cdot \, \hat{w}_{q}
+\norm{ u \, - \, u_{h} }_{L^{2}(\Omega)}^{2} \ = \ \sum_{T \in \mathbb{T}} {2 \abs{T} \, \cdot \, \sum_{q = 1}^{Nq} { \, \abs{ u \, (F(x_{q}^{Q})) \, - \, \sum_{i=1}^{n} {\hat{u_{h}}^{i} \, \hat{\phi}_{i} \, (\hat{x_{q}^{Q})}}}^2 } \, \cdot \, \hat{w}_{q} }
 \]
 mentre nel caso $\mathbb{H}^{1}$, dato che per definizione di norma $\mathbb{H}^{1}(\Omega)$: 
 \[
@@ -708,7 +717,7 @@ dobbiamo stimare solo il secondo termine, dato che il primo rientra nel caso pre
 \norm{ \nabla (u \, - \, u_{h}) }_{L^{2}(\Omega)}^{2} \ &= \ \int_{\Omega} { \abs{ \nabla (u \, - \, u_{h}) }^{2} dx} \ = \ \int_{\Omega} { \abs{ \nabla u \, - \, \nabla u_{h} }^{2} dx} \\
 &= \ \sum_{T \in \mathbb{T}}{\int_{T} { \abs{ \nabla u \, - \, \nabla u_{h} }^{2} dx}} \ = \ \sum_{T \in \mathbb{T}} {\int_{T} { \abs{ \nabla u(x) \, - \, \sum_{i=1}^{n} {u_{h}^{i} \, \nabla \phi_{i} \, (x)} }^{2} dx}}  \\ 
 &= \ \sum_{T \in \mathbb{T}} 2 \abs{T} {\int_{\hat{T}} { \abs{ \nabla u \, (F(\hat{x})) \, - \, \sum_{i=1}^{n} { J_{F}^{-T} \, \hat{u_{h}}^{i} \, \nabla \hat{\phi}_{i} \, (\hat{x})} }^{2} d\hat{x}}} \\
-&= \sum_{T \in \mathbb{T}} {2 \abs{T} \, \cdot \, \abs{ \nabla u \, (F(x_{q}^{Q})) \, - \, \sum_{i=1}^{n} {J_{F}^{-T} \, \hat{u_{h}}^{i} \, \nabla  \hat{\phi}_{i} \, (\hat{x_{q}^{Q})}}}^2 } \, \cdot \, \hat{w}_{q}
+&= \sum_{T \in \mathbb{T}} {2 \abs{T} \, \cdot \sum_{q = 1}^{Nq} { \, \abs{ \nabla u \, (F(x_{q}^{Q})) \, - \, \sum_{i=1}^{n} {J_{F}^{-T} \, \hat{u_{h}}^{i} \, \nabla  \hat{\phi}_{i} \, (\hat{x_{q}^{Q})}}}^2 } \, \cdot \, \hat{w}_{q} }
 \end{flalign*}
 
 \hfill \\
@@ -758,8 +767,7 @@ if (strcmp(exact_solution,'yes'))
         v1 = vertices(iele,1);
         v2 = vertices(iele,2);
         v3 = vertices(iele,3);
-    
-    
+        
         % Vertex 1 Coordinates
         x1 = xv(v1);
         y1 = yv(v1);
@@ -805,12 +813,11 @@ if (strcmp(exact_solution,'yes'))
         
         % Tmp variables to hold the element result
         sqL2 = 0;
-        sqH1 = [ 0; 0];
-        normsqH1 = 0;
+        sqH1 = 0;
         
         % Computation Over Weighting Nodes
         for q=1:Nq
-            % Compute the sum on phi(i)
+            % Compute the u_h expansion over the \hat{phi}(i)
             tmpL2_1 = 0; 
             tmpH1 = [0; 0];       
             for i=1:6
@@ -822,20 +829,19 @@ if (strcmp(exact_solution,'yes'))
             xq = tmpL2_2(1);
             yq = tmpL2_2(2);            
             sqL2 = sqL2 + (ue(xq,yq) - tmpL2_1)^2 * whq(q);
-            %sqH1 = sqH1 + [ux(xq,yq); uy(xq,yq)] - tmpH1;
-            sqH1 = sqH1 + ue(xq,yq) - tmpH1;
-            normsqH1 = normsqH1 + dot(sqH1, sqH1)*whq(q);
+            [uegx, uegy] = ueGrad(xq,yq); 
+            sqH1 = sqH1 + (norm([uegx; uegy] - tmpH1)^2)*whq(q);
         end
     
         sqL2 = 2*area*sqL2;
-        normsqH1 = 2*area*normsqH1;
+        sqH1 = 2*area*sqH1;
         
         % L2 Error On The Element (Squared)
         errL2sq = errL2sq + sqL2;
         
         % H1 Error On The Element (Squared)
         % ErrH1 = errL2(u) + errL2(grad u)
-        errH1sq = errH1sq + errL2sq + normsqH1;
+        errH1sq = errH1sq + errL2sq + sqH1;
         
     end  
     
@@ -855,9 +861,14 @@ end
 
 
 \chapter{Esperimenti Numerici}
-Consideriamo in questo capitolo un confronto tra soluzione esatta e soluzione approssimata per verificare a livello pratico i risultati teorici di convergenza rispetto al parametro geometrico $h$ della specifica mesh. Usiamo i seguenti valori per il valore $h_max$:
+Consideriamo in questo capitolo un confronto tra soluzione esatta e soluzione approssimata per verificare a livello pratico i risultati teorici di convergenza rispetto al parametro geometrico $h$ della specifica mesh.
+Per le mesh uniformi usiamo una successione di triangolazioni determinate dal numero di nodi $N^2$:
 \[ 
-h \ = \ [ \, 0.05 \ - \ 0.10 \ - \ 0.20 \ - \ 0.30 \ - \ - 0.40 \ - 0.50 \, ] \]
+N \ = \ [ \, 5 \ - \ 10 \ - \ 15 \ - \ 20 \, ] \]
+Usiamo invece il seguente parametro d'area $h$ per le mesh non uniformi generate da Triangle:
+\[ 
+h \ = \ [ \, 0.01 \ - \ 0.05 \ - \ 0.15 \ - \ 0.25 \, ] 
+\]
 
 \section{Prima Equazione}
 Consideriamo dunque la seguente soluzione esatta:
@@ -878,6 +889,21 @@ Abbiamo infatti che la differenza tra gli errori con differenti ordini di quadra
 \[ \abs{ \Delta \text{ErrH1}} \ = \ [0] \]
 ovvero la differenza tra gli errori è trascurabile. Passiamo ora ai grafici ottenuti:
 
+\begin{figure}[!h]
+	\centering
+	\begin{subfigure}[b]{0.49\textwidth}
+    		\includegraphics[width=\textwidth]{Eq1-L2U.png}
+    		\caption{Eq1, errore L2 mesh uniforme}
+    	\end{subfigure}
+    	\begin{subfigure}[b]{0.49\textwidth}
+    		\includegraphics[width=\textwidth]{Eq1-H1U.png}
+    		\caption{Eq1, errore H1 mesh uniforme}
+    	\end{subfigure}
+\end{figure}
+
+
+
+
 \subsection{Mesh Non Uniforme}
 Passiamo ora al caso di mesh non uniformi. Abbiamo i seguenti errori:
 \[ \text{ErrL2} \ = \ [] \]
@@ -890,25 +916,96 @@ E la differenza tra gli errori è data da
 \[ \abs{ \Delta \text{ErrH1}} \ = \ [0] \]
 che è trascurabile. I grafici, effettuati sia rispetto al massimo $h$ della triangolazione che a quello medio, sono i seguenti:
 
+\begin{figure}[!h]
+	\centering
+	\begin{subfigure}[b]{0.49\textwidth}
+    		\includegraphics[width=\textwidth]{Eq1-L2avg.png}
+    		\caption{Eq1, errore L2 mesh non uniforme (h avg)}
+    	\end{subfigure}
+    	\begin{subfigure}[b]{0.49\textwidth}
+    		\includegraphics[width=\textwidth]{Eq1-L2max.png}
+    		\caption{Eq1, errore L2 mesh non uniforme (h max)}
+    	\end{subfigure}
+\end{figure}
+
+\begin{figure}[!h]
+	\centering
+	\begin{subfigure}[b]{0.49\textwidth}
+    		\includegraphics[width=\textwidth]{Eq1-H1avg.png}
+    		\caption{Eq1, errore H1 mesh non uniforme (h avg)}
+    	\end{subfigure}
+    	\begin{subfigure}[b]{0.49\textwidth}
+    		\includegraphics[width=\textwidth]{Eq1-H1max.png}
+    		\caption{Eq1, errore H1 mesh non uniforme (h max)}
+    	\end{subfigure}
+\end{figure}
+
+
+
 
 \section{Seconda Equazione}
 Consideriamo ora la seguente soluzione esatta:
 \[ u_e \ = \ e^{x \, + \, y} + x \, \sin(y) + y \, \sin(x) \]
 e quindi i coefficienti:
-\[ c \ = \ 14 + 3 \, x \, y \qquad \beta = [0, \, 0] \qquad a = \log(\, x + \, y \, + 2) \]
+\[ c \ = \ 14 + 3 \, x \, y \qquad \beta = [0, \, 0] \qquad a = x^2 + y^2 + 5 \]
 e risolviamo l'equazione associata tramite gli elementi finiti di ordine $k = 2$ usando una formula di quadratura di ordine $3$. 
 
 \subsection{Mesh Uniforme}
 Partiamo da mesh uniformi. Otteniamo i seguenti errori:
-\[ \text{ErrL2} \ = \ [] \]
-\[ \text{ErrH1} \ = \ [] \]
+\begin{flalign*}
+\text{ErrL2} \ &= \quad \ 0.27342 \quad \ 0.16622 \quad \ 0.13427 \quad \ 0.11965 \\
+\text{ErrH1} \ &= \quad \quad 6.2026 \quad \ 6.1426 \quad \ \ 6.1955 \quad \ \ \  6.2946
+\end{flalign*}
 Passiamo ora ai grafici ottenuti:
+
+\begin{figure}[!h]
+	\centering
+	\begin{subfigure}[b]{0.49\textwidth}
+    		\includegraphics[width=\textwidth]{Eq2-L2U.png}
+    		\caption{Eq2, errore L2 mesh uniforme}
+    	\end{subfigure}
+    	\begin{subfigure}[b]{0.49\textwidth}
+    		\includegraphics[width=\textwidth]{Eq2-H1U.png}
+    		\caption{Eq2, errore H1 mesh uniforme}
+    	\end{subfigure}
+\end{figure}
+
+
 
 \subsection{Mesh Non Uniforme}
 Passiamo ora al caso di mesh non uniformi. Abbiamo i seguenti errori:
-\[ \text{ErrL2} \ = \ [] \]
-\[ \text{ErrH1} \ = \ [] \]
-I grafici, effettuati sia rispetto al massimo $h$ della triangolazione che a quello medio, sono i seguenti:
+\begin{flalign*}
+\text{ErrL2} \ &= \quad \ 0.13097 \quad \ 1.2344\quad \ 1.1831 \quad \ 1.2344 \\                 
+\text{ErrH1} \ &= \quad \quad 5.9825  \quad \ 6.3312 \quad \ \ 7.8346 5 \quad \ \ \  9.5725               
+\end{flalign*}
+I grafici, effettuati sia rispetto al massimo $h$ presente nella triangolazione che a quello medio, sono i seguenti:
+
+\begin{figure}[!h]
+	\centering
+	\begin{subfigure}[b]{0.49\textwidth}
+    		\includegraphics[width=\textwidth]{Eq2-L2avg.png}
+    		\caption{Eq2, errore L2 mesh non uniforme (h avg)}
+
+    	\end{subfigure}
+    	\begin{subfigure}[b]{0.49\textwidth}
+    		\includegraphics[width=\textwidth]{Eq2-L2max.png}
+   		\caption{Eq2, errore L2 mesh non uniforme (h max)}
+    	\end{subfigure}
+\end{figure}
+
+\begin{figure}[!h]
+	\centering
+	\begin{subfigure}[b]{0.49\textwidth}
+    		\includegraphics[width=\textwidth]{Eq2-H1avg.png}
+		\caption{Eq2, errore H1 mesh non uniforme (h avg)}
+
+    	\end{subfigure}
+    	\begin{subfigure}[b]{0.49\textwidth}
+    		\includegraphics[width=\textwidth]{Eq2-H1max.png}
+    		\caption{Eq2, errore H1 mesh non uniforme (h max)}
+    	\end{subfigure}
+\end{figure}
+
 
 
 
