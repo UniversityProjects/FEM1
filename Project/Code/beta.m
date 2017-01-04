@@ -13,5 +13,5 @@ function [b1, b2] = beta(x, y)
 % b2 = 5*y;
 
 % Equation 2
-b1 = 0;
-b2 = 0;
+b1 = -x;
+b2 = y;

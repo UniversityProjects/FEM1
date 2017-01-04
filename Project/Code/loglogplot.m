@@ -1,4 +1,4 @@
-%clc
+clc
 clear all
 close all
 
@@ -25,8 +25,8 @@ h_avg = zeros(1,4);
 % Uniform Mesh
 for i=1:4
   disp(['Uniform mesh: N = ', num2str(N(i))]);
-  [errL2_u(i), errH1_u(i), h_max(i), h_avg(i)] = fem2 ('uniform', N(i),'degree=3', 'no', 'yes', 'no');
-  h_u(i) = h_avg(i);
+  [errL2_u(i), errH1_u(i), h_max_u(i), h_avg_u(i)] = fem2 ('uniform', N(i),'degree=3', 'no', 'yes', 'no');
+  h_u(i) = h_max_u(i);
 end 
 
 % Triangle NonUniform Mesh
@@ -52,57 +52,64 @@ if (strcmp(plot,'yes'))
   % Uniform Mesh Plots
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-  figure();
-  title ('Uniform Mesh: ErrL2 - h^3');
+  % Figure 1
+  figure(1);
   loglog (h_u, errL2_u, '-*r', h_u, h_u.^3,'-b');
-  legend ('ErrL2', '(1/N) ^3');
+  legend ('ErrL2', '(1/N) ^3, 'location', 'northeastoutside');
+  title ('Uniform Mesh: ErrL2 - h^3');
   grid on;
   hold on;
+  saveas (1, "Eq1-L2U.png");
 
-
-  figure();
-  title ('Uniform Mesh: ErrH1 - h^2');
+  % Figure 2
+  figure(2);
   loglog (h_u, errH1_u, '-*r', h_u, h_u.^2,'-b');
-  legend ('ErrH1', '(1/N) ^2');
+  legend ('ErrH1', '(1/N) ^2, 'location', 'northeastoutside');
+  title ('Uniform Mesh: ErrH1 - h^2');
   grid on;
   hold on;
+  saveas (2, "Eq1-H1U.png");
 
 
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   % NonUniform Mesh Plots
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-  figure();
-  title ('NonUniform Mesh: ErrL2 - h_max^3');
+  % Figure 3
+  figure(3);
   loglog (h_max, errL2_t, '-*r', h_max, h_max.^3,'-b');
-  legend ('ErrL2', 'h max ^3');
+  legend ('ErrL2', 'h max ^3, 'location', 'northeastoutside');
+  title ('NonUniform Mesh: ErrL2 - h_max^3');
   grid on;
   hold on;
+  saveas (3, "Eq1-L2max.png");
 
-
-  figure();
-  title ('NonUniform Mesh: ErrL2 - h_avg^3');
+  % Figure 4
+  figure(4);
   loglog (h_avg, errL2_t, '-*r', h_avg, h_avg.^3,'-b');
-  legend ('ErrL2', 'h avg ^3');
+  legend ('ErrL2', 'h avg ^3, 'location', 'northeastoutside');
+  title ('NonUniform Mesh: ErrL2 - h_avg^3');
   grid on;
   hold on;
+  saveas (4, "Eq1-H1max.png");
 
-
-  figure();
-  title ('NonUniform Mesh: ErrH1 - h_max^2');
+  % Figure 5
+  figure(5);
   loglog (h_max, errH1_t, '-*r', h_max, h_max.^2,'-b');
-  legend ('ErrH1', 'h max ^2');
+  legend ('ErrH1', 'h max ^2, 'location', 'northeastoutside');
+  title ('NonUniform Mesh: ErrH1 - h_max^2');
   grid on;
   hold on;
+  saveas (5, "Eq1-L2avg.png");
 
-
-  figure();
-  title ('NonUniform Mesh: ErrH1 - h_avg^2');
+  % Figure 6
+  figure(6);
   loglog (h_avg, errH1_t, '-*r', h_avg, h_avg.^2,'-b');
-  legend ('ErrH1', 'h avg ^2');
+  legend ('ErrH1', 'h avg ^2, 'location', 'northeastoutside');
+  title ('NonUniform Mesh: ErrH1 - h_avg^2');
   grid on;
   hold on;
+  saveas (6, "Eq1-H1avg.png");
   
 end
-
 

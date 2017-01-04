@@ -460,7 +460,7 @@ definiamo l'associato problema duale come
 \[ u \in  \mathbb{V} : \quad a(v,u) = F(u) \qquad \qquad \forall v \, \in \mathbb{V} \]
 \end{definition} 
 \hfill \\
-Notiamo che il problema duale coincide con quello primale se la forma bilineare $\alpha (\dot , \dot)$ è simmetrica. Inoltre se il problema primale ammette soluzione unica (per Lax-Milgram \ref{Lemma di Lax-Milgram}), lo stesso vale per il problema duale. Tramite il problema duale (considerando l'errore come temine noto del problema duale) è possibile dimostrare la seguente stima per l'errore in $L^{2}(\Omega)$:
+Notiamo che il problema duale coincide con quello primale se la forma bilineare $\alpha (\cdot \, , \, \cdot)$ è simmetrica. Inoltre se il problema primale ammette soluzione unica (per Lax-Milgram \ref{Lemma di Lax-Milgram}), lo stesso vale per il problema duale. Tramite il problema duale (considerando l'errore come temine noto del problema duale) è possibile dimostrare la seguente stima per l'errore in $L^{2}(\Omega)$:
 \begin{theorem} [Stima Errore $L^2(\Omega)$] \label{Stima Errore L2} \index{Stima Errore $L^2{\Omega}$}
 \[ \mid \mid u \, - \, u_{h} \mid \mid_{L^{2}(\Omega)}^{2} \ \leq \ C h^{k+1} \mid u \mid_{\mathbb{H}^{k+1}(\Omega)} \]
 \end{theorem}
@@ -861,33 +861,45 @@ end
 
 
 \chapter{Esperimenti Numerici}
-Consideriamo in questo capitolo un confronto tra soluzione esatta e soluzione approssimata per verificare a livello pratico i risultati teorici di convergenza rispetto al parametro geometrico $h$ della specifica mesh.
-Per le mesh uniformi usiamo una successione di triangolazioni determinate dal numero di nodi $N^2$:
-\[ 
-N \ = \ [ \, 5 \ - \ 10 \ - \ 15 \ - \ 20 \, ] \]
+Consideriamo in questo capitolo un confronto tra soluzione esatta e soluzione approssimata per verificare a livello pratico i risultati teorici di convergenza rispetto al parametro geometrico $h$ della specifica mesh. Vogliamo mostrare che l'errore $L^{2}$ va come  $\mathbb{O}(h^{3})$, mentre l'errore $\mathbb{H}^{1}$ va come  $\mathbb{O}(h^{2})$. \\
+Per le mesh uniformi usiamo una successione di triangolazioni tali che $N$ vari tra $5$ e $15$.\\
 Usiamo invece il seguente parametro d'area $h$ per le mesh non uniformi generate da Triangle:
 \[ 
-h \ = \ [ \, 0.01 \ - \ 0.05 \ - \ 0.15 \ - \ 0.25 \, ] 
+h \ = \ [ \, 0.005 \ - \ 0.01 \ - \ 0.05 \ - \ 0.15 \ - \ 0.25 \, ] 
 \]
 
 \section{Prima Equazione}
 Consideriamo dunque la seguente soluzione esatta:
-\[ u_e \ = \ x^2 + y^2 + \sin(x) \, \cdot \, \cos(x) \]
+\[ u_e \ = \ e^{x^{2} + y^{2}} \, \cdot \, \sin(y)\]
+%\[ u_e \ = \ x^2 + y^2 + \sin(x) \, \cdot \, \cos(x) \]
 e quindi i coefficienti:
-\[ c \ = \ 1 + x^2 + y^2 \qquad \beta = [5x, \, 5y] \qquad a = e^{x \cdot y} \]
+%\[ c \ = \ 1 + x^2 + y^2 \qquad \beta = [5x, \, 5y] \qquad a = e^{x \cdot y} \]
+\[ c \ = \ e^{x + y} \; + \; 5 \qquad \beta = [-x, \, y] \qquad a = x^{2} \, \cdot \, y^{2} \; + \; 15 \]
 e risolviamo l'equazione associata tramite gli elementi finiti di ordine $k = 2$ usando una formula di quadratura di ordine $3$. 
 
 \subsection{Mesh Uniforme}
 Partiamo da mesh uniformi. Otteniamo i seguenti errori:
-\[ \text{ErrL2} \ = \ [] \]
-\[ \text{ErrH1} \ = \ [] \]
-Inanzitutto mostriamo i valori ottenuti con un ordine di quadratura $5$, che in accordo con la teoria non dovrebbero influire in modo rilevante sull'errore globale:
-\[ \text{ErrL2} \ = \ [] \]
-\[ \text{ErrH1} \ = \ [] \]
-Abbiamo infatti che la differenza tra gli errori con differenti ordini di quadratura è data da:
-\[ \abs{ \Delta \text{ErrL2}} \ = \ [0] \]
-\[ \abs{ \Delta \text{ErrH1}} \ = \ [0] \]
-ovvero la differenza tra gli errori è trascurabile. Passiamo ora ai grafici ottenuti:
+\hfill \\
+\begin{table}[!h]
+\centering
+\begin{tabular}{ | c | c | c | c | c | c | c | }
+\hline
+ErrL2	&	$0.00036557$ & $0.0002059$ & $0.00012683$ & $8.3492e\text{-}05$  & $5.7831e\text{-}05$ & $4.1695e\text{-}05$ \\ \hline 
+ErrH1	&	$0.36489$ &	$0.25431$	 & $0.18728$	 & $0.14363$ & $0.11362$ & $0.092125$ \\ \hline 
+\end{tabular}
+\end{table}
+
+Inanzitutto mostriamo i valori ottenuti con un ordine di quadratura $5$ non si discostano in modo rilevante da quelli ottenuti con ordine di quadratura $3$:
+\begin{table}[!h]
+\centering
+\begin{tabular}{ | c | c | c | c | c | c | c | }
+\hline
+ErrL2	&	$0$ & $0$ & $0$ & $0$  & $0$ & $0$ \\ \hline 
+ErrH1	&	$0$ &	$0$	 & $0$	 & $0$ & $0$ & $0$ \\ \hline 
+\end{tabular}
+\end{table}
+\hfill \\
+Passiamo ora ai grafici ottenuti, dove si nota un evidente parallelismo tra le due curve, che mostra l'aderenza con la teoria per la convergenza degli errori.
 
 \begin{figure}[!h]
 	\centering
@@ -902,19 +914,28 @@ ovvero la differenza tra gli errori è trascurabile. Passiamo ora ai grafici ott
 \end{figure}
 
 
-
-
 \subsection{Mesh Non Uniforme}
-Passiamo ora al caso di mesh non uniformi. Abbiamo i seguenti errori:
-\[ \text{ErrL2} \ = \ [] \]
-\[ \text{ErrH1} \ = \ [] \]
+Passiamo ora al caso di mesh non uniformi. Abbiamo i seguenti errori: \\
+\begin{table}[!h]
+\centering
+\begin{tabular}{ | c | c | c | c | c | c | }
+\hline
+ErrL2	&	$0.06929$ &	$0.013243$	 & $0.0030863$	 & $0.00056221$ & $9.0456e\text{-}05$ \\ \hline 
+ErrH1	&	$6.4278$ &	$4.0406$	 & $0.84966$	 & $0.2273    $ & $0.089256$ \\ \hline
+\end{tabular}
+\end{table}
+\hfill \\
 Mostriamo che anche in questo caso l'ordine di quadratura superiore a $3$ non porta evidenti benefici sulla precisione della soluzione approssimata. Usiamo in particolare un ordine di quadratura uguale a $7$:
-\[ \text{ErrL2} \ = \ [] \]
-\[ \text{ErrH1} \ = \ [] \]
-E la differenza tra gli errori è data da
-\[ \abs{ \Delta \text{ErrL2}} \ = \ [0] \]
-\[ \abs{ \Delta \text{ErrH1}} \ = \ [0] \]
-che è trascurabile. I grafici, effettuati sia rispetto al massimo $h$ della triangolazione che a quello medio, sono i seguenti:
+\begin{table}[!h]
+\centering
+\begin{tabular}{ | c | c | c | c | c | c | c | }
+\hline
+ErrL2	&	$0$ & $0$ & $0$ & $0$  & $0$ & $0$ \\ \hline 
+ErrH1	&	$0$ &	$0$	 & $0$	 & $0$ & $0$ & $0$ \\ \hline 
+\end{tabular}
+\end{table}
+\hfill \\
+I grafici, effettuati sia rispetto al massimo $h$ della triangolazione che a quello medio, sono i seguenti:
 
 \begin{figure}[!h]
 	\centering
@@ -927,6 +948,8 @@ che è trascurabile. I grafici, effettuati sia rispetto al massimo $h$ della tri
     		\caption{Eq1, errore L2 mesh non uniforme (h max)}
     	\end{subfigure}
 \end{figure}
+
+\clearpage
 
 \begin{figure}[!h]
 	\centering
@@ -945,19 +968,22 @@ che è trascurabile. I grafici, effettuati sia rispetto al massimo $h$ della tri
 
 \section{Seconda Equazione}
 Consideriamo ora la seguente soluzione esatta:
-\[ u_e \ = \ e^{x \, + \, y} + x \, \sin(y) + y \, \sin(x) \]
-e quindi i coefficienti:
-\[ c \ = \ 14 + 3 \, x \, y \qquad \beta = [0, \, 0] \qquad a = x^2 + y^2 + 5 \]
-e risolviamo l'equazione associata tramite gli elementi finiti di ordine $k = 2$ usando una formula di quadratura di ordine $3$. 
+\[ u_e \ = \ \cos{(x^2)} \ + \ \sin{(y^2)} \ + \ 10 \]
+e gli associati coefficienti:
+\[ c \ = \ x \ + \ y \ + \ 1 \; + \; 2 \qquad \beta = [1, \, 1] \qquad a = 6 \]
+e risolviamo l'equazione associata tramite gli elementi finiti di ordine $k = 2$ usando una formula di quadratura di ordine $7$. 
 
 \subsection{Mesh Uniforme}
-Partiamo da mesh uniformi. Otteniamo i seguenti errori:
-\begin{flalign*}
-\text{ErrL2} \ &= \quad \ 0.27342 \quad \ 0.16622 \quad \ 0.13427 \quad \ 0.11965 \\
-\text{ErrH1} \ &= \quad \quad 6.2026 \quad \ 6.1426 \quad \ \ 6.1955 \quad \ \ \  6.2946
-\end{flalign*}
-Passiamo ora ai grafici ottenuti:
-
+Partendo sempre dalle mesh uniformi otteniamo i seguenti errori:
+\begin{table}[!h]
+\centering
+\begin{tabular}{ | c | c | c | c | c | c | c | }
+\hline
+ErrL2	&	$0.00031514$ & $0.00018232$ & $0.00011477$ & $7.6868e\text{-}05$ & $5.3975e\text{-}05$ & $3.9341e\text{-}05$ \\ \hline 
+ErrH1	&	$0.067708$ &	$0.047209$	 & $0.03477$	 & $0.026663$ & $0.02109$ & $0.017096$ \\ \hline 
+\end{tabular}
+\end{table}
+E i relativi grafici in cui si vede ancora la convergenza tramite il parallelismo sono i seguenti:
 \begin{figure}[!h]
 	\centering
 	\begin{subfigure}[b]{0.49\textwidth}
@@ -973,12 +999,18 @@ Passiamo ora ai grafici ottenuti:
 
 
 \subsection{Mesh Non Uniforme}
-Passiamo ora al caso di mesh non uniformi. Abbiamo i seguenti errori:
-\begin{flalign*}
-\text{ErrL2} \ &= \quad \ 0.13097 \quad \ 1.2344\quad \ 1.1831 \quad \ 1.2344 \\                 
-\text{ErrH1} \ &= \quad \quad 5.9825  \quad \ 6.3312 \quad \ \ 7.8346 5 \quad \ \ \  9.5725               
-\end{flalign*}
-I grafici, effettuati sia rispetto al massimo $h$ presente nella triangolazione che a quello medio, sono i seguenti:
+Considerando invece mesh non uniformi abbiamo o seguenti errori:
+\hfill \\
+\begin{table}[!h]
+\centering
+\begin{tabular}{ | c | c | c | c | c | c | }
+\hline
+ErrL2	&	$0.007828$ &	 $0.0033816$	 & $0.00084461$	 & $8.5435e\text{-}05$ & $1.5742e\text{-}05$ \\ \hline 
+ErrH1	&	$0.75273$ &	 $0.40637$	 & $0.12105$	 & $0.027238$ & $0.011611$ \\ \hline
+\end{tabular}
+\end{table}
+
+I grafici, effettuati anche in questa seconda equazione sia rispetto al massimo $h$ presente nella triangolazione che a quello medio, sono i seguenti:
 
 \begin{figure}[!h]
 	\centering
