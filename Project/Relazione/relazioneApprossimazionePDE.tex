@@ -89,7 +89,7 @@
 
 \author{Pirola Zaltieri Stella \and Saporito Francesco}
 \title{Relazione Approssimazione Di Equazioni Differenziali}
-\date{\today}
+\date{January 4, 2017}
 
 \begin{document}
 
@@ -884,7 +884,7 @@ Partiamo da mesh uniformi. Otteniamo i seguenti errori:
 \centering
 \begin{tabular}{ | c | c | c | c | c | c | c | }
 \hline
-ErrL2	&	$0.00036557$ & $0.0002059$ & $0.00012683$ & $8.3492e\text{-}05$  & $5.7831e\text{-}05$ & $4.1695e\text{-}05$ \\ \hline 
+ErrL2	&	$0.00040673$ & $0.00022501$ & $0.00013668$ & $8.8971e\text{-}05$  & $6.1072e\text{-}05$ & $4.3709e\text{-}05$ \\ \hline 
 ErrH1	&	$0.36489$ &	$0.25431$	 & $0.18728$	 & $0.14363$ & $0.11362$ & $0.092125$ \\ \hline 
 \end{tabular}
 \end{table}
@@ -894,8 +894,8 @@ Inanzitutto mostriamo i valori ottenuti con un ordine di quadratura $5$ non si d
 \centering
 \begin{tabular}{ | c | c | c | c | c | c | c | }
 \hline
-ErrL2	&	$0$ & $0$ & $0$ & $0$  & $0$ & $0$ \\ \hline 
-ErrH1	&	$0$ &	$0$	 & $0$	 & $0$ & $0$ & $0$ \\ \hline 
+ErrL2 &	$0.00036557$ & $0.0002059$ & $0.00012683$ & $8.3492e\text{-}05$  & $5.7831e\text{-}05$ & $4.1695e\text{-}05$ \\ \hline 
+ErrH1	&	$0.36101$ &	$0.25227$	 & $0.18611$	 & $0.1429$ & $0.11315$ & $0.0918$ \\ \hline 
 \end{tabular}
 \end{table}
 \hfill \\
@@ -920,22 +920,22 @@ Passiamo ora al caso di mesh non uniformi. Abbiamo i seguenti errori: \\
 \centering
 \begin{tabular}{ | c | c | c | c | c | c | }
 \hline
-ErrL2	&	$0.06929$ &	$0.013243$	 & $0.0030863$	 & $0.00056221$ & $9.0456e\text{-}05$ \\ \hline 
+ErrL2	&	$0.05929$ &	$0.013243$	 & $0.0030863$	 & $0.00056221$ & $9.0456e\text{-}05$ \\ \hline 
 ErrH1	&	$6.4278$ &	$4.0406$	 & $0.84966$	 & $0.2273    $ & $0.089256$ \\ \hline
 \end{tabular}
 \end{table}
 \hfill \\
-Mostriamo che anche in questo caso l'ordine di quadratura superiore a $3$ non porta evidenti benefici sulla precisione della soluzione approssimata. Usiamo in particolare un ordine di quadratura uguale a $7$:
+Mostriamo che anche in questo caso l'ordine di quadratura superiore a $3$ non modifica l'ordine di convergenza:
 \begin{table}[!h]
 \centering
-\begin{tabular}{ | c | c | c | c | c | c | c | }
+\begin{tabular}{ | c | c | c | c | c | c | }
 \hline
-ErrL2	&	$0$ & $0$ & $0$ & $0$  & $0$ & $0$ \\ \hline 
-ErrH1	&	$0$ &	$0$	 & $0$	 & $0$ & $0$ & $0$ \\ \hline 
+ErrL2	&	$0.051904$ & $0.012432$ & $0.0030539$ & $0.00056218$  & $9.2335e\text{-}05$ \\ \hline 
+ErrH1	&	$6.3768$ &	$3.9555$	 & $0.83643$	 & $0.22654$ & $0.08914$ \\ \hline 
 \end{tabular}
 \end{table}
 \hfill \\
-I grafici, effettuati sia rispetto al massimo $h$ della triangolazione che a quello medio, sono i seguenti:
+I grafici, effettuati sia rispetto al massimo $h$ della triangolazione che a quello medio, mostrano che nella mesh non uniforme non si ha più un perfetto parallelismo, ma l'andamento della curva degli errori è comunque aderente con la convergenza ricercata.
 
 \begin{figure}[!h]
 	\centering
@@ -962,7 +962,7 @@ I grafici, effettuati sia rispetto al massimo $h$ della triangolazione che a que
     		\caption{Eq1, errore H1 mesh non uniforme (h max)}
     	\end{subfigure}
 \end{figure}
-
+\hfill \\
 
 
 
@@ -970,8 +970,8 @@ I grafici, effettuati sia rispetto al massimo $h$ della triangolazione che a que
 Consideriamo ora la seguente soluzione esatta:
 \[ u_e \ = \ \cos{(x^2)} \ + \ \sin{(y^2)} \ + \ 10 \]
 e gli associati coefficienti:
-\[ c \ = \ x \ + \ y \ + \ 1 \; + \; 2 \qquad \beta = [1, \, 1] \qquad a = 6 \]
-e risolviamo l'equazione associata tramite gli elementi finiti di ordine $k = 2$ usando una formula di quadratura di ordine $7$. 
+\[ c \ = \ x \ + \ y \ + \ 1 \qquad \beta = [1, \, 1] \qquad a = 6 \]
+e risolviamo con elementi finiti di ordine $k = 2$ e una formula di quadratura di ordine $3$. 
 
 \subsection{Mesh Uniforme}
 Partendo sempre dalle mesh uniformi otteniamo i seguenti errori:
@@ -983,7 +983,8 @@ ErrL2	&	$0.00031514$ & $0.00018232$ & $0.00011477$ & $7.6868e\text{-}05$ & $5.39
 ErrH1	&	$0.067708$ &	$0.047209$	 & $0.03477$	 & $0.026663$ & $0.02109$ & $0.017096$ \\ \hline 
 \end{tabular}
 \end{table}
-E i relativi grafici in cui si vede ancora la convergenza tramite il parallelismo sono i seguenti:
+\hfill \\
+E i relativi grafici in cui si vede la convergenza tramite il parallelismo sono i seguenti:
 \begin{figure}[!h]
 	\centering
 	\begin{subfigure}[b]{0.49\textwidth}
@@ -1010,7 +1011,7 @@ ErrH1	&	$0.75273$ &	 $0.40637$	 & $0.12105$	 & $0.027238$ & $0.011611$ \\ \hline
 \end{tabular}
 \end{table}
 
-I grafici, effettuati anche in questa seconda equazione sia rispetto al massimo $h$ presente nella triangolazione che a quello medio, sono i seguenti:
+I grafici, effettuati anche in questa seconda equazione sia rispetto al massimo $h$ presente nella triangolazione che a quello medio, non risultano perfettamente paralleli ma mostrano un'inclinazione simile:
 
 \begin{figure}[!h]
 	\centering
@@ -1037,7 +1038,6 @@ I grafici, effettuati anche in questa seconda equazione sia rispetto al massimo 
     		\caption{Eq2, errore H1 mesh non uniforme (h max)}
     	\end{subfigure}
 \end{figure}
-
 
 
 
