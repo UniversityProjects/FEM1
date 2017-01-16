@@ -55,20 +55,20 @@ if (strcmp(plot,'yes'))
   % Figure 1
   figure(1);
   loglog (h_u, errL2_u, '-*r', h_u, h_u.^3,'-b');
-  legend ('ErrL2', '(1/N) ^3, 'location', 'northeastoutside');
+  legend ('ErrL2', '(1/N) ^3', 'location', 'northeastoutside');
   title ('Uniform Mesh: ErrL2 - h^3');
   grid on;
   hold on;
-  saveas (1, "Eq1-L2U.png");
+  saveas (1, 'Eq1-L2U.png');
 
   % Figure 2
   figure(2);
   loglog (h_u, errH1_u, '-*r', h_u, h_u.^2,'-b');
-  legend ('ErrH1', '(1/N) ^2, 'location', 'northeastoutside');
+  legend ('ErrH1', '(1/N) ^2', 'location', 'northeastoutside');
   title ('Uniform Mesh: ErrH1 - h^2');
   grid on;
   hold on;
-  saveas (2, "Eq1-H1U.png");
+  saveas (2, 'Eq1-H1U.png');
 
 
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -78,38 +78,38 @@ if (strcmp(plot,'yes'))
   % Figure 3
   figure(3);
   loglog (h_max, errL2_t, '-*r', h_max, h_max.^3,'-b');
-  legend ('ErrL2', 'h max ^3, 'location', 'northeastoutside');
+  legend ('ErrL2', 'h max ^3', 'location', 'northeastoutside');
   title ('NonUniform Mesh: ErrL2 - h_max^3');
   grid on;
   hold on;
-  saveas (3, "Eq1-L2max.png");
+  saveas (3, 'Eq1-L2max.png');
 
   % Figure 4
   figure(4);
   loglog (h_avg, errL2_t, '-*r', h_avg, h_avg.^3,'-b');
-  legend ('ErrL2', 'h avg ^3, 'location', 'northeastoutside');
+  legend ('ErrL2', 'h avg ^3', 'location', 'northeastoutside');
   title ('NonUniform Mesh: ErrL2 - h_avg^3');
   grid on;
   hold on;
-  saveas (4, "Eq1-H1max.png");
+  saveas (4, 'Eq1-H1max.png');
 
   % Figure 5
   figure(5);
   loglog (h_max, errH1_t, '-*r', h_max, h_max.^2,'-b');
-  legend ('ErrH1', 'h max ^2, 'location', 'northeastoutside');
+  legend ('ErrH1', 'h max ^2', 'location', 'northeastoutside');
   title ('NonUniform Mesh: ErrH1 - h_max^2');
   grid on;
   hold on;
-  saveas (5, "Eq1-L2avg.png");
+  saveas (5, 'Eq1-L2avg.png');
 
   % Figure 6
   figure(6);
   loglog (h_avg, errH1_t, '-*r', h_avg, h_avg.^2,'-b');
-  legend ('ErrH1', 'h avg ^2, 'location', 'northeastoutside');
+  legend ('ErrH1', 'h avg ^2', 'location', 'northeastoutside');
   title ('NonUniform Mesh: ErrH1 - h_avg^2');
   grid on;
   hold on;
-  saveas (6, "Eq1-H1avg.png");
+  saveas (6, 'Eq1-H1avg.png');
   
 end
 
